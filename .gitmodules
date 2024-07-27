@@ -7,3 +7,6 @@
 [submodule "ibc-go"]
 	path = ibc-go
 	url = https://github.com/cosmos/ibc-go
+[submodule "side"]
+	path = side
+	url = https://github.com/sideprotocol/side.git
