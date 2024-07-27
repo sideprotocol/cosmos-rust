@@ -21,6 +21,12 @@ pub use tendermint_proto as tendermint;
 /// The version (commit hash) of the Cosmos SDK used when generating this library.
 pub const COSMOS_SDK_VERSION: &str = include_str!("prost/cosmos-sdk/COSMOS_SDK_COMMIT");
 
+pub mod side {
+    pub mod btcbridge {
+        include!("prost/side/side.btcbridge.rs");
+    }
+}
+
 /// Cosmos protobuf definitions.
 pub mod cosmos {
     /// Authentication of accounts and transactions.

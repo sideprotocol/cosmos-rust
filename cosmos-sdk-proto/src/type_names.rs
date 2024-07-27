@@ -3,7 +3,7 @@
 // TODO(tarcieri): generate these automatically using `prost-build`
 // See: https://github.com/tokio-rs/prost/issues/926
 
-use crate::{cosmos, traits::Name};
+use crate::{cosmos, side, traits::Name};
 
 macro_rules! impl_name {
     ($type:ty, $package:expr, $name:expr) => {
@@ -352,6 +352,13 @@ impl_name!(
     "cosmos.tx.v1beta1",
     "ModeInfo"
 );
+
+impl_name!(
+    side::btcbridge::MsgSubmitBlockHeaderRequest,
+    "side.btcbridge",
+    "MsgSubmitBlockHeaderRequest"
+);
+
 
 #[cfg(feature = "cosmwasm")]
 mod wasm {
