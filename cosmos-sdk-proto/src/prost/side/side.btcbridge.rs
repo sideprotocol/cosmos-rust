@@ -21,56 +21,19 @@ pub struct BlockHeader {
     #[prost(uint64, tag = "9")]
     pub ntx: u64,
 }
-/// Bitcoin Signing Request
+/// Bitcoin Withdrawal Request
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BitcoinSigningRequest {
+pub struct BitcoinWithdrawRequest {
     #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub txid: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub psbt: ::prost::alloc::string::String,
-    #[prost(enumeration = "SigningStatus", tag = "4")]
-    pub status: i32,
-    #[prost(uint64, tag = "5")]
+    #[prost(message, optional, tag = "2")]
+    pub amount: ::core::option::Option<super::super::cosmos::base::v1beta1::Coin>,
+    #[prost(uint64, tag = "3")]
     pub sequence: u64,
-    /// The vault address that the request is associated with
-    #[prost(string, tag = "6")]
-    pub vault_address: ::prost::alloc::string::String,
-}
-/// Bitcoin UTXO
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Utxo {
-    #[prost(string, tag = "1")]
+    #[prost(string, tag = "4")]
     pub txid: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "2")]
-    pub vout: u64,
-    #[prost(string, tag = "3")]
-    pub address: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "4")]
-    pub amount: u64,
-    /// height is used for calculating confirmations
-    #[prost(uint64, tag = "5")]
-    pub height: u64,
-    #[prost(bytes = "vec", tag = "6")]
-    pub pub_key_script: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bool, tag = "7")]
-    pub is_coinbase: bool,
-    #[prost(bool, tag = "8")]
-    pub is_locked: bool,
-    /// rune balances associated with the UTXO
-    #[prost(message, repeated, tag = "9")]
-    pub runes: ::prost::alloc::vec::Vec<RuneBalance>,
-}
-/// Rune Balance
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RuneBalance {
-    /// serialized rune id
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    /// rune amount
-    #[prost(string, tag = "2")]
-    pub amount: ::prost::alloc::string::String,
+    #[prost(enumeration = "WithdrawStatus", tag = "5")]
+    pub status: i32,
 }
 /// Rune ID
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -92,58 +55,65 @@ pub struct Edict {
     #[prost(uint32, tag = "3")]
     pub output: u32,
 }
-/// Bitcoin Signing Status
+/// Bitcoin Withdrawal Status
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
-pub enum SigningStatus {
-    /// SIGNING_STATUS_UNSPECIFIED - Default value, should not be used
+pub enum WithdrawStatus {
+    /// WITHDRAW_STATUS_UNSPECIFIED - Default value, should not be used
     Unspecified = 0,
-    /// SIGNING_STATUS_CREATED - The signing request is created
+    /// WITHDRAW_STATUS_CREATED - The withdrawal request is created
     Created = 1,
-    /// SIGNING_STATUS_SIGNED - The signing request is signed
-    Signed = 2,
-    /// SIGNING_STATUS_BROADCASTED - The signing request is broadcasted
-    Broadcasted = 3,
-    /// SIGNING_STATUS_CONFIRMED - The signing request is confirmed
-    Confirmed = 4,
-    /// SIGNING_STATUS_REJECTED - The signing request is rejected
-    Rejected = 5,
+    /// WITHDRAW_STATUS_BROADCASTED - The withdrawal tx is broadcasted
+    Broadcasted = 2,
+    /// WITHDRAW_STATUS_CONFIRMED - The withdrawal tx is confirmed
+    Confirmed = 3,
 }
-impl SigningStatus {
+impl WithdrawStatus {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            SigningStatus::Unspecified => "SIGNING_STATUS_UNSPECIFIED",
-            SigningStatus::Created => "SIGNING_STATUS_CREATED",
-            SigningStatus::Signed => "SIGNING_STATUS_SIGNED",
-            SigningStatus::Broadcasted => "SIGNING_STATUS_BROADCASTED",
-            SigningStatus::Confirmed => "SIGNING_STATUS_CONFIRMED",
-            SigningStatus::Rejected => "SIGNING_STATUS_REJECTED",
+            WithdrawStatus::Unspecified => "WITHDRAW_STATUS_UNSPECIFIED",
+            WithdrawStatus::Created => "WITHDRAW_STATUS_CREATED",
+            WithdrawStatus::Broadcasted => "WITHDRAW_STATUS_BROADCASTED",
+            WithdrawStatus::Confirmed => "WITHDRAW_STATUS_CONFIRMED",
         }
     }
 }
 /// Params defines the parameters for the module.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Params {
-    /// Only accept blocks sending from these addresses
-    #[prost(string, repeated, tag = "1")]
-    pub authorized_relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// The minimum number of confirmations required for a block to be accepted
-    #[prost(int32, tag = "2")]
+    #[prost(int32, tag = "1")]
     pub confirmations: i32,
     /// Indicates the maximum depth or distance from the latest block up to which transactions are considered for acceptance.
-    #[prost(uint64, tag = "3")]
+    #[prost(uint64, tag = "2")]
     pub max_acceptable_block_depth: u64,
-    /// the denomanation of the voucher
-    #[prost(string, tag = "4")]
+    /// The denomination of the voucher
+    #[prost(string, tag = "3")]
     pub btc_voucher_denom: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag = "5")]
+    /// Asset vaults
+    #[prost(message, repeated, tag = "4")]
     pub vaults: ::prost::alloc::vec::Vec<Vault>,
+    /// Protocol limitations
+    #[prost(message, optional, tag = "5")]
+    pub protocol_limits: ::core::option::Option<ProtocolLimits>,
+    /// Protocol fees
+    #[prost(message, optional, tag = "6")]
+    pub protocol_fees: ::core::option::Option<ProtocolFees>,
+    /// Network fee for withdrawal to bitcoin
+    #[prost(int64, tag = "7")]
+    pub network_fee: i64,
+    /// Reward epoch for relayer and TSS participant incentivization
+    #[prost(message, optional, tag = "8")]
+    pub reward_epoch: ::core::option::Option<::prost_types::Duration>,
+    /// Transition period after which TSS participants update process is completed
+    #[prost(message, optional, tag = "9")]
+    pub tss_update_transition_period: ::core::option::Option<::prost_types::Duration>,
 }
-/// Vault defines the parameters for the module.
+/// Vault defines the asset vault
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Vault {
     /// the depositor should send their btc to this address
@@ -153,8 +123,37 @@ pub struct Vault {
     #[prost(string, tag = "2")]
     pub pub_key: ::prost::alloc::string::String,
     /// the address to which the voucher is sent
-    #[prost(enumeration = "AssetType", tag = "4")]
+    #[prost(enumeration = "AssetType", tag = "3")]
     pub asset_type: i32,
+    /// version
+    #[prost(int32, tag = "4")]
+    pub version: i32,
+}
+/// ProtocolLimits defines the params related to the the protocol limitations
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ProtocolLimits {
+    /// The minimum deposit amount for btc
+    #[prost(int64, tag = "1")]
+    pub btc_min_deposit: i64,
+    /// The minimum withdrawal amount for btc
+    #[prost(int64, tag = "2")]
+    pub btc_min_withdraw: i64,
+    /// The maximum withdrawal amount for btc
+    #[prost(int64, tag = "3")]
+    pub btc_max_withdraw: i64,
+}
+/// ProtocolFees defines the params related to the protocol fees
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ProtocolFees {
+    /// Protocol fee amount for deposit
+    #[prost(int64, tag = "1")]
+    pub deposit_fee: i64,
+    /// Protocol fee amount for withdrawal
+    #[prost(int64, tag = "2")]
+    pub withdraw_fee: i64,
+    /// Protocol fee collector
+    #[prost(string, tag = "3")]
+    pub collector: ::prost::alloc::string::String,
 }
 /// AssetType defines the type of asset
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -193,56 +192,54 @@ pub struct GenesisState {
     pub best_block_header: ::core::option::Option<BlockHeader>,
     #[prost(message, repeated, tag = "3")]
     pub block_headers: ::prost::alloc::vec::Vec<BlockHeader>,
-    #[prost(message, repeated, tag = "4")]
-    pub utxos: ::prost::alloc::vec::Vec<Utxo>,
 }
-/// QuerySigningRequestRequest is request type for the Query/SigningRequest RPC method.
+/// QueryWithdrawRequestsRequest is request type for the Query/WithdrawRequests RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QuerySigningRequestRequest {
-    #[prost(enumeration = "SigningStatus", tag = "1")]
+pub struct QueryWithdrawRequestsRequest {
+    #[prost(enumeration = "WithdrawStatus", tag = "1")]
     pub status: i32,
     #[prost(message, optional, tag = "2")]
     pub pagination:
         ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
 }
-/// QuerySigningRequestResponse is response type for the Query/SigningRequest RPC method.
+/// QueryWithdrawRequestsResponse is response type for the Query/WithdrawRequests RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QuerySigningRequestResponse {
+pub struct QueryWithdrawRequestsResponse {
     #[prost(message, repeated, tag = "1")]
-    pub requests: ::prost::alloc::vec::Vec<BitcoinSigningRequest>,
+    pub requests: ::prost::alloc::vec::Vec<BitcoinWithdrawRequest>,
     #[prost(message, optional, tag = "2")]
     pub pagination:
         ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
 }
-/// QuerySigningRequestByAddressRequest is request type for the Query/SigningRequestByAddress RPC method.
+/// QueryWithdrawRequestsByAddressRequest is request type for the Query/WithdrawRequestsByAddress RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QuerySigningRequestByAddressRequest {
+pub struct QueryWithdrawRequestsByAddressRequest {
     #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "2")]
     pub pagination:
         ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
 }
-/// QuerySigningRequestByAddressResponse is response type for the Query/SigningRequestByAddress RPC method.
+/// QueryWithdrawRequestsByAddressResponse is response type for the Query/WithdrawRequestsByAddress RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QuerySigningRequestByAddressResponse {
+pub struct QueryWithdrawRequestsByAddressResponse {
     #[prost(message, repeated, tag = "1")]
-    pub requests: ::prost::alloc::vec::Vec<BitcoinSigningRequest>,
+    pub requests: ::prost::alloc::vec::Vec<BitcoinWithdrawRequest>,
     #[prost(message, optional, tag = "2")]
     pub pagination:
         ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
 }
-/// QuerySigningRequestByTxHashRequest is request type for the Query/SigningRequestByTxHash RPC method.
+/// QueryWithdrawRequestByTxHashRequest is request type for the Query/WithdrawRequestByTxHash RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QuerySigningRequestByTxHashRequest {
+pub struct QueryWithdrawRequestByTxHashRequest {
     #[prost(string, tag = "1")]
     pub txid: ::prost::alloc::string::String,
 }
-/// QuerySigningRequestByTxHashResponse is response type for the Query/SigningRequestByTxHash RPC method.
+/// QueryWithdrawRequestByTxHashResponse is response type for the Query/WithdrawRequestByTxHash RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QuerySigningRequestByTxHashResponse {
+pub struct QueryWithdrawRequestByTxHashResponse {
     #[prost(message, optional, tag = "1")]
-    pub request: ::core::option::Option<BitcoinSigningRequest>,
+    pub request: ::core::option::Option<BitcoinWithdrawRequest>,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -289,43 +286,24 @@ pub struct QueryBlockHeaderByHashResponse {
     #[prost(message, optional, tag = "1")]
     pub block_header: ::core::option::Option<BlockHeader>,
 }
-/// QueryUTXOsRequest is the request type for the Query/UTXOs RPC method.
+/// MsgSubmitWithdrawStatus defines the Msg/SubmitWithdrawStatus request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUtxOsRequest {}
-/// QueryUTXOsResponse is the response type for the Query/UTXOs RPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUtxOsResponse {
-    #[prost(message, repeated, tag = "1")]
-    pub utxos: ::prost::alloc::vec::Vec<Utxo>,
-}
-/// QueryUTXOsByAddressRequest is the request type for the Query/UTXOsByAddress RPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUtxOsByAddressRequest {
-    #[prost(string, tag = "1")]
-    pub address: ::prost::alloc::string::String,
-}
-/// QueryUTXOsByAddressResponse is the response type for the Query/UTXOsByAddress RPC method.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUtxOsByAddressResponse {
-    #[prost(message, repeated, tag = "1")]
-    pub utxos: ::prost::alloc::vec::Vec<Utxo>,
-}
-/// MsgSubmitWithdrawStatusRequest defines the Msg/SubmitWithdrawStatus request type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitWithdrawStatusRequest {
+pub struct MsgSubmitWithdrawStatus {
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
+    #[prost(uint64, tag = "2")]
+    pub sequence: u64,
+    #[prost(string, tag = "3")]
     pub txid: ::prost::alloc::string::String,
-    #[prost(enumeration = "SigningStatus", tag = "3")]
+    #[prost(enumeration = "WithdrawStatus", tag = "4")]
     pub status: i32,
 }
 /// MsgSubmitWithdrawStatusResponse defines the Msg/SubmitWithdrawStatus response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitWithdrawStatusResponse {}
-/// MsgBlockHeaderRequest defines the Msg/SubmitBlockHeaders request type.
+/// MsgSubmitBlockHeaders defines the Msg/SubmitBlockHeaders request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitBlockHeaderRequest {
+pub struct MsgSubmitBlockHeaders {
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
     #[prost(message, repeated, tag = "2")]
@@ -334,9 +312,9 @@ pub struct MsgSubmitBlockHeaderRequest {
 /// MsgSubmitBlockHeadersResponse defines the Msg/SubmitBlockHeaders response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitBlockHeadersResponse {}
-/// MsgSubmitTransactionRequest defines the Msg/SubmitTransaction request type.
+/// MsgSubmitDepositTransaction defines the Msg/SubmitDepositTransaction request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitDepositTransactionRequest {
+pub struct MsgSubmitDepositTransaction {
     /// this is relayer address who submit the bitcoin transaction to the side chain
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
@@ -352,12 +330,12 @@ pub struct MsgSubmitDepositTransactionRequest {
     #[prost(string, repeated, tag = "5")]
     pub proof: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// MsgSubmitTransactionResponse defines the Msg/SubmitTransaction response type.
+/// MsgSubmitDepositTransactionResponse defines the Msg/SubmitDepositTransaction response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitDepositTransactionResponse {}
-/// MsgSubmitTransactionRequest defines the Msg/SubmitTransaction request type.
+/// MsgSubmitWithdrawTransaction defines the Msg/SubmitWithdrawTransaction request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitWithdrawTransactionRequest {
+pub struct MsgSubmitWithdrawTransaction {
     /// this is relayer address who submit the bitcoin transaction to the side chain
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
@@ -369,54 +347,26 @@ pub struct MsgSubmitWithdrawTransactionRequest {
     #[prost(string, repeated, tag = "5")]
     pub proof: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// MsgSubmitTransactionResponse defines the Msg/SubmitTransaction response type.
+/// MsgSubmitWithdrawTransactionResponse defines the Msg/SubmitWithdrawTransaction response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitWithdrawTransactionResponse {}
-/// Msg defines the MsgUpdateSender service.
+/// MsgWithdrawToBitcoin defines the Msg/WithdrawToBitcoin request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateQualifiedRelayersRequest {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    /// update senders who can send block headers to the side chain
-    #[prost(string, repeated, tag = "2")]
-    pub relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-}
-/// MsgUpdateSenderResponse defines the Msg/UpdateSender response type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateQualifiedRelayersResponse {}
-/// MsgWithdrawBitcoinRequest defines the Msg/WithdrawBitcoin request type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgWithdrawBitcoinRequest {
+pub struct MsgWithdrawToBitcoin {
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
     /// withdraw amount in satoshi, etc: 100000000sat = 1btc
     #[prost(string, tag = "2")]
     pub amount: ::prost::alloc::string::String,
-    /// fee rate in sats/vB
-    #[prost(string, tag = "3")]
-    pub fee_rate: ::prost::alloc::string::String,
 }
-/// MsgWithdrawBitcoinResponse defines the Msg/WithdrawBitcoin response type.
+/// MsgWithdrawToBitcoinResponse defines the Msg/WithdrawToBitcoin response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgWithdrawBitcoinResponse {}
-/// MsgSubmitWithdrawSignaturesRequest defines the Msg/SubmitWithdrawSignatures request type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitWithdrawSignaturesRequest {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub txid: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub psbt: ::prost::alloc::string::String,
-}
-/// MsgSubmitWithdrawSignaturesResponse defines the Msg/SubmitWithdrawSignatures response type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgSubmitWithdrawSignaturesResponse {}
-/// MsgUpdateParamsRequest is the Msg/UpdateParams request type.
+pub struct MsgWithdrawToBitcoinResponse {}
+/// MsgUpdateParams is the Msg/UpdateParams request type.
 ///
 /// Since: cosmos-sdk 0.47
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateParamsRequest {
+pub struct MsgUpdateParams {
     /// authority is the address that controls the module (defaults to x/gov unless overwritten).
     #[prost(string, tag = "1")]
     pub authority: ::prost::alloc::string::String,

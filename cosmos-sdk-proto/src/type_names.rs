@@ -14,6 +14,38 @@ macro_rules! impl_name {
     };
 }
 
+// SIDE chain
+impl_name!(
+    side::btcbridge::MsgSubmitBlockHeaders,
+    "side.btcbridge",
+    "MsgSubmitBlockHeaders"
+);
+
+impl_name!(
+    side::btcbridge::MsgSubmitDepositTransaction,
+    "side.btcbridge",
+    "MsgSubmitDepositTransaction"
+);
+
+impl_name!(
+    side::btcbridge::MsgSubmitWithdrawStatus,
+    "side.btcbridge",
+    "MsgSubmitWithdrawStatus"
+);
+
+impl_name!(
+    side::btcbridge::MsgSubmitWithdrawTransaction,
+    "side.btcbridge",
+    "MsgSubmitWithdrawTransaction"
+);
+
+impl_name!(
+    side::btcbridge::MsgWithdrawToBitcoin,
+    "side.btcbridge",
+    "MsgWithdrawToBitcoin"
+);
+// end side chain
+
 impl_name!(
     cosmos::upgrade::v1beta1::SoftwareUpgradeProposal,
     "cosmos.upgrade.v1beta1",
