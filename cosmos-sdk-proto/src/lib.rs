@@ -245,7 +245,7 @@ pub mod cosmwasm {
     }
 }
 
-/// IBC protobuf definitions.
+// IBC protobuf definitions.
 // #[cfg(feature = "ibc")]
 // pub mod ibc {
 //     /// IBC applications.
