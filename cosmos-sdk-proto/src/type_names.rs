@@ -385,12 +385,6 @@ impl_name!(
     "ModeInfo"
 );
 
-impl_name!(
-    side::btcbridge::MsgSubmitBlockHeaderRequest,
-    "side.btcbridge",
-    "MsgSubmitBlockHeaderRequest"
-);
-
 
 #[cfg(feature = "cosmwasm")]
 mod wasm {
