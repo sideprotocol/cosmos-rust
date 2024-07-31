@@ -44,6 +44,12 @@ impl_name!(
     "side.btcbridge",
     "MsgWithdrawToBitcoin"
 );
+
+impl_name!(
+    side::btcbridge::MsgCompleteDkg,
+    "side.btcbridge",
+    "MsgCompleteDkg"
+);
 // end side chain
 
 impl_name!(

@@ -238,6 +238,89 @@ pub mod query_client {
             ));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn query_dkg_request(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryDkgRequestRequest>,
+        ) -> std::result::Result<tonic::Response<super::QueryDkgRequestResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/side.btcbridge.Query/QueryDKGRequest");
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("side.btcbridge.Query", "QueryDKGRequest"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn query_dkg_requests(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryDkgRequestsRequest>,
+        ) -> std::result::Result<tonic::Response<super::QueryDkgRequestsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/side.btcbridge.Query/QueryDKGRequests");
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("side.btcbridge.Query", "QueryDKGRequests"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn query_all_dkg_requests(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryAllDkgRequestsRequest>,
+        ) -> std::result::Result<tonic::Response<super::QueryAllDkgRequestsResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/side.btcbridge.Query/QueryAllDKGRequests");
+            let mut req = request.into_request();
+            req.extensions_mut().insert(GrpcMethod::new(
+                "side.btcbridge.Query",
+                "QueryAllDKGRequests",
+            ));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn query_dkg_completion_requests(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryDkgCompletionRequestsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryDkgCompletionRequestsResponse>,
+            tonic::Status,
+        > {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/side.btcbridge.Query/QueryDKGCompletionRequests",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut().insert(GrpcMethod::new(
+                "side.btcbridge.Query",
+                "QueryDKGCompletionRequests",
+            ));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -286,6 +369,25 @@ pub mod query_server {
             request: tonic::Request<super::QueryWithdrawRequestByTxHashRequest>,
         ) -> std::result::Result<
             tonic::Response<super::QueryWithdrawRequestByTxHashResponse>,
+            tonic::Status,
+        >;
+        async fn query_dkg_request(
+            &self,
+            request: tonic::Request<super::QueryDkgRequestRequest>,
+        ) -> std::result::Result<tonic::Response<super::QueryDkgRequestResponse>, tonic::Status>;
+        async fn query_dkg_requests(
+            &self,
+            request: tonic::Request<super::QueryDkgRequestsRequest>,
+        ) -> std::result::Result<tonic::Response<super::QueryDkgRequestsResponse>, tonic::Status>;
+        async fn query_all_dkg_requests(
+            &self,
+            request: tonic::Request<super::QueryAllDkgRequestsRequest>,
+        ) -> std::result::Result<tonic::Response<super::QueryAllDkgRequestsResponse>, tonic::Status>;
+        async fn query_dkg_completion_requests(
+            &self,
+            request: tonic::Request<super::QueryDkgCompletionRequestsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryDkgCompletionRequestsResponse>,
             tonic::Status,
         >;
     }
@@ -651,6 +753,169 @@ pub mod query_server {
                     };
                     Box::pin(fut)
                 }
+                "/side.btcbridge.Query/QueryDKGRequest" => {
+                    #[allow(non_camel_case_types)]
+                    struct QueryDKGRequestSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query> tonic::server::UnaryService<super::QueryDkgRequestRequest>
+                        for QueryDKGRequestSvc<T>
+                    {
+                        type Response = super::QueryDkgRequestResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::QueryDkgRequestRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move { (*inner).query_dkg_request(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = QueryDKGRequestSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Query/QueryDKGRequests" => {
+                    #[allow(non_camel_case_types)]
+                    struct QueryDKGRequestsSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query> tonic::server::UnaryService<super::QueryDkgRequestsRequest>
+                        for QueryDKGRequestsSvc<T>
+                    {
+                        type Response = super::QueryDkgRequestsResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::QueryDkgRequestsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move { (*inner).query_dkg_requests(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = QueryDKGRequestsSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Query/QueryAllDKGRequests" => {
+                    #[allow(non_camel_case_types)]
+                    struct QueryAllDKGRequestsSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query> tonic::server::UnaryService<super::QueryAllDkgRequestsRequest>
+                        for QueryAllDKGRequestsSvc<T>
+                    {
+                        type Response = super::QueryAllDkgRequestsResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::QueryAllDkgRequestsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move { (*inner).query_all_dkg_requests(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = QueryAllDKGRequestsSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Query/QueryDKGCompletionRequests" => {
+                    #[allow(non_camel_case_types)]
+                    struct QueryDKGCompletionRequestsSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query>
+                        tonic::server::UnaryService<super::QueryDkgCompletionRequestsRequest>
+                        for QueryDKGCompletionRequestsSvc<T>
+                    {
+                        type Response = super::QueryDkgCompletionRequestsResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::QueryDkgCompletionRequestsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                (*inner).query_dkg_completion_requests(request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = QueryDKGCompletionRequestsSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 _ => Box::pin(async move {
                     Ok(http::Response::builder()
                         .status(200)
@@ -880,6 +1145,42 @@ pub mod msg_client {
             ));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn initiate_dkg(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgInitiateDkg>,
+        ) -> std::result::Result<tonic::Response<super::MsgInitiateDkgResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/side.btcbridge.Msg/InitiateDKG");
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("side.btcbridge.Msg", "InitiateDKG"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn complete_dkg(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgCompleteDkg>,
+        ) -> std::result::Result<tonic::Response<super::MsgCompleteDkgResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/side.btcbridge.Msg/CompleteDKG");
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("side.btcbridge.Msg", "CompleteDKG"));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn update_params(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgUpdateParams>,
@@ -937,6 +1238,14 @@ pub mod msg_server {
             tonic::Response<super::MsgSubmitWithdrawStatusResponse>,
             tonic::Status,
         >;
+        async fn initiate_dkg(
+            &self,
+            request: tonic::Request<super::MsgInitiateDkg>,
+        ) -> std::result::Result<tonic::Response<super::MsgInitiateDkgResponse>, tonic::Status>;
+        async fn complete_dkg(
+            &self,
+            request: tonic::Request<super::MsgCompleteDkg>,
+        ) -> std::result::Result<tonic::Response<super::MsgCompleteDkgResponse>, tonic::Status>;
         async fn update_params(
             &self,
             request: tonic::Request<super::MsgUpdateParams>,
@@ -1203,6 +1512,82 @@ pub mod msg_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = SubmitWithdrawStatusSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Msg/InitiateDKG" => {
+                    #[allow(non_camel_case_types)]
+                    struct InitiateDKGSvc<T: Msg>(pub Arc<T>);
+                    impl<T: Msg> tonic::server::UnaryService<super::MsgInitiateDkg> for InitiateDKGSvc<T> {
+                        type Response = super::MsgInitiateDkgResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::MsgInitiateDkg>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move { (*inner).initiate_dkg(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = InitiateDKGSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Msg/CompleteDKG" => {
+                    #[allow(non_camel_case_types)]
+                    struct CompleteDKGSvc<T: Msg>(pub Arc<T>);
+                    impl<T: Msg> tonic::server::UnaryService<super::MsgCompleteDkg> for CompleteDKGSvc<T> {
+                        type Response = super::MsgCompleteDkgResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::MsgCompleteDkg>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move { (*inner).complete_dkg(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = CompleteDKGSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

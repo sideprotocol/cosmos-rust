@@ -1,4 +1,114 @@
 // @generated
+/// Params defines the parameters for the module.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Params {
+    /// The minimum number of confirmations required for a block to be accepted
+    #[prost(int32, tag = "1")]
+    pub confirmations: i32,
+    /// Indicates the maximum depth or distance from the latest block up to which transactions are considered for acceptance.
+    #[prost(uint64, tag = "2")]
+    pub max_acceptable_block_depth: u64,
+    /// The denomination of the voucher
+    #[prost(string, tag = "3")]
+    pub btc_voucher_denom: ::prost::alloc::string::String,
+    /// Asset vaults
+    #[prost(message, repeated, tag = "4")]
+    pub vaults: ::prost::alloc::vec::Vec<Vault>,
+    /// Protocol limitations
+    #[prost(message, optional, tag = "5")]
+    pub protocol_limits: ::core::option::Option<ProtocolLimits>,
+    /// Protocol fees
+    #[prost(message, optional, tag = "6")]
+    pub protocol_fees: ::core::option::Option<ProtocolFees>,
+    /// Network fee for withdrawal to bitcoin
+    #[prost(int64, tag = "7")]
+    pub network_fee: i64,
+    /// Reward epoch for relayer and TSS participant incentivization
+    #[prost(message, optional, tag = "8")]
+    pub reward_epoch: ::core::option::Option<::prost_types::Duration>,
+    /// TSS params
+    #[prost(message, optional, tag = "9")]
+    pub tss_params: ::core::option::Option<TssParams>,
+}
+/// Vault defines the asset vault
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Vault {
+    /// the depositor should send their btc to this address
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+    /// the pub key to which the voucher is sent
+    #[prost(string, tag = "2")]
+    pub pub_key: ::prost::alloc::string::String,
+    /// the address to which the voucher is sent
+    #[prost(enumeration = "AssetType", tag = "3")]
+    pub asset_type: i32,
+    /// version
+    #[prost(int32, tag = "4")]
+    pub version: i32,
+}
+/// ProtocolLimits defines the params related to the the protocol limitations
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ProtocolLimits {
+    /// The minimum deposit amount for btc
+    #[prost(int64, tag = "1")]
+    pub btc_min_deposit: i64,
+    /// The minimum withdrawal amount for btc
+    #[prost(int64, tag = "2")]
+    pub btc_min_withdraw: i64,
+    /// The maximum withdrawal amount for btc
+    #[prost(int64, tag = "3")]
+    pub btc_max_withdraw: i64,
+}
+/// ProtocolFees defines the params related to the protocol fees
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ProtocolFees {
+    /// Protocol fee amount for deposit
+    #[prost(int64, tag = "1")]
+    pub deposit_fee: i64,
+    /// Protocol fee amount for withdrawal
+    #[prost(int64, tag = "2")]
+    pub withdraw_fee: i64,
+    /// Protocol fee collector
+    #[prost(string, tag = "3")]
+    pub collector: ::prost::alloc::string::String,
+}
+/// TSSParams defines the params related to TSS
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TssParams {
+    /// timeout duration for DKG request
+    #[prost(message, optional, tag = "1")]
+    pub dkg_timeout_period: ::core::option::Option<::prost_types::Duration>,
+    /// Transition period after which TSS participants update process is completed
+    #[prost(message, optional, tag = "2")]
+    pub participant_update_transition_period: ::core::option::Option<::prost_types::Duration>,
+}
+/// AssetType defines the type of asset
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum AssetType {
+    /// Unspecified asset type
+    Unspecified = 0,
+    /// BTC
+    Btc = 1,
+    /// BRC20: ordi, sats
+    Brc20 = 2,
+    /// RUNE, dog*go*to*the*moon
+    Rune = 3,
+}
+impl AssetType {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            AssetType::Unspecified => "ASSET_TYPE_UNSPECIFIED",
+            AssetType::Btc => "ASSET_TYPE_BTC",
+            AssetType::Brc20 => "ASSET_TYPE_BRC20",
+            AssetType::Rune => "ASSET_TYPE_RUNE",
+        }
+    }
+}
 /// Bitcoin Block Header
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BlockHeader {
@@ -55,6 +165,54 @@ pub struct Edict {
     #[prost(uint32, tag = "3")]
     pub output: u32,
 }
+/// DKG Participant
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DkgParticipant {
+    /// the moniker of the corresponding validator
+    #[prost(string, tag = "1")]
+    pub moniker: ::prost::alloc::string::String,
+    /// the operator address of the corresponding validator
+    #[prost(string, tag = "2")]
+    pub address: ::prost::alloc::string::String,
+}
+/// DKG Request
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DkgRequest {
+    /// the unique request id
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+    /// participant set
+    #[prost(message, repeated, tag = "2")]
+    pub participants: ::prost::alloc::vec::Vec<DkgParticipant>,
+    /// threshold required to perform DKG
+    #[prost(uint32, tag = "3")]
+    pub threshold: u32,
+    /// expiration time
+    #[prost(message, optional, tag = "4")]
+    pub expiration: ::core::option::Option<::prost_types::Timestamp>,
+    /// status
+    #[prost(enumeration = "DkgRequestStatus", tag = "5")]
+    pub status: i32,
+}
+/// DKG Completion Request
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DkgCompletionRequest {
+    /// request id
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+    /// sender
+    #[prost(string, tag = "2")]
+    pub sender: ::prost::alloc::string::String,
+    /// new vaults generated by DKG
+    #[prost(string, repeated, tag = "3")]
+    pub vaults: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// validator address
+    #[prost(string, tag = "4")]
+    pub validator: ::prost::alloc::string::String,
+    /// hex encoded validator signature
+    #[prost(string, tag = "5")]
+    pub signature: ::prost::alloc::string::String,
+}
 /// Bitcoin Withdrawal Status
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -82,103 +240,29 @@ impl WithdrawStatus {
         }
     }
 }
-/// Params defines the parameters for the module.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Params {
-    /// The minimum number of confirmations required for a block to be accepted
-    #[prost(int32, tag = "1")]
-    pub confirmations: i32,
-    /// Indicates the maximum depth or distance from the latest block up to which transactions are considered for acceptance.
-    #[prost(uint64, tag = "2")]
-    pub max_acceptable_block_depth: u64,
-    /// The denomination of the voucher
-    #[prost(string, tag = "3")]
-    pub btc_voucher_denom: ::prost::alloc::string::String,
-    /// Asset vaults
-    #[prost(message, repeated, tag = "4")]
-    pub vaults: ::prost::alloc::vec::Vec<Vault>,
-    /// Protocol limitations
-    #[prost(message, optional, tag = "5")]
-    pub protocol_limits: ::core::option::Option<ProtocolLimits>,
-    /// Protocol fees
-    #[prost(message, optional, tag = "6")]
-    pub protocol_fees: ::core::option::Option<ProtocolFees>,
-    /// Network fee for withdrawal to bitcoin
-    #[prost(int64, tag = "7")]
-    pub network_fee: i64,
-    /// Reward epoch for relayer and TSS participant incentivization
-    #[prost(message, optional, tag = "8")]
-    pub reward_epoch: ::core::option::Option<::prost_types::Duration>,
-    /// Transition period after which TSS participants update process is completed
-    #[prost(message, optional, tag = "9")]
-    pub tss_update_transition_period: ::core::option::Option<::prost_types::Duration>,
-}
-/// Vault defines the asset vault
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Vault {
-    /// the depositor should send their btc to this address
-    #[prost(string, tag = "1")]
-    pub address: ::prost::alloc::string::String,
-    /// the pub key to which the voucher is sent
-    #[prost(string, tag = "2")]
-    pub pub_key: ::prost::alloc::string::String,
-    /// the address to which the voucher is sent
-    #[prost(enumeration = "AssetType", tag = "3")]
-    pub asset_type: i32,
-    /// version
-    #[prost(int32, tag = "4")]
-    pub version: i32,
-}
-/// ProtocolLimits defines the params related to the the protocol limitations
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ProtocolLimits {
-    /// The minimum deposit amount for btc
-    #[prost(int64, tag = "1")]
-    pub btc_min_deposit: i64,
-    /// The minimum withdrawal amount for btc
-    #[prost(int64, tag = "2")]
-    pub btc_min_withdraw: i64,
-    /// The maximum withdrawal amount for btc
-    #[prost(int64, tag = "3")]
-    pub btc_max_withdraw: i64,
-}
-/// ProtocolFees defines the params related to the protocol fees
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ProtocolFees {
-    /// Protocol fee amount for deposit
-    #[prost(int64, tag = "1")]
-    pub deposit_fee: i64,
-    /// Protocol fee amount for withdrawal
-    #[prost(int64, tag = "2")]
-    pub withdraw_fee: i64,
-    /// Protocol fee collector
-    #[prost(string, tag = "3")]
-    pub collector: ::prost::alloc::string::String,
-}
-/// AssetType defines the type of asset
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
-pub enum AssetType {
-    /// Unspecified asset type
+pub enum DkgRequestStatus {
+    /// DKG_REQUEST_STATUS_UNSPECIFIED defines the unknown DKG request status
     Unspecified = 0,
-    /// BTC
-    Btc = 1,
-    /// BRC20: ordi, sats
-    Brc20 = 2,
-    /// RUNE, dog*go*to*the*moon
-    Rune = 3,
+    /// DKG_REQUEST_STATUS_PENDING defines the status of the DKG request which is pending
+    Pending = 1,
+    /// DKG_REQUEST_STATUS_COMPLETED defines the status of the DKG request which is completed
+    Completed = 2,
+    /// DKG_REQUEST_STATUS_FAILED defines the status of the DKG request which failed
+    Failed = 3,
 }
-impl AssetType {
+impl DkgRequestStatus {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            AssetType::Unspecified => "ASSET_TYPE_UNSPECIFIED",
-            AssetType::Btc => "ASSET_TYPE_BTC",
-            AssetType::Brc20 => "ASSET_TYPE_BRC20",
-            AssetType::Rune => "ASSET_TYPE_RUNE",
+            DkgRequestStatus::Unspecified => "DKG_REQUEST_STATUS_UNSPECIFIED",
+            DkgRequestStatus::Pending => "DKG_REQUEST_STATUS_PENDING",
+            DkgRequestStatus::Completed => "DKG_REQUEST_STATUS_COMPLETED",
+            DkgRequestStatus::Failed => "DKG_REQUEST_STATUS_FAILED",
         }
     }
 }
@@ -286,6 +370,51 @@ pub struct QueryBlockHeaderByHashResponse {
     #[prost(message, optional, tag = "1")]
     pub block_header: ::core::option::Option<BlockHeader>,
 }
+/// QueryDKGRequestRequest is the request type for the Query/DKGRequest RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDkgRequestRequest {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+}
+/// QueryDKGRequestResponse is the response type for the Query/DKGRequest RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDkgRequestResponse {
+    #[prost(message, optional, tag = "1")]
+    pub request: ::core::option::Option<DkgRequest>,
+}
+/// QueryDKGRequestsRequest is the request type for the Query/DKGRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDkgRequestsRequest {
+    #[prost(enumeration = "DkgRequestStatus", tag = "1")]
+    pub status: i32,
+}
+/// QueryDKGRequestsResponse is the response type for the Query/DKGRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDkgRequestsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub requests: ::prost::alloc::vec::Vec<DkgRequest>,
+}
+/// QueryAllDKGRequestsRequest is the request type for the Query/AllDKGRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAllDkgRequestsRequest {}
+/// QueryAllDKGRequestsResponse is the response type for the Query/AllDKGRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryAllDkgRequestsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub requests: ::prost::alloc::vec::Vec<DkgRequest>,
+}
+/// QueryDKGCompletionRequestsRequest is the request type for the Query/DKGCompletionRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDkgCompletionRequestsRequest {
+    #[prost(uint64, tag = "1")]
+    pub id: u64,
+}
+/// QueryDKGCompletionRequestsResponse is the response type for the Query/DKGCompletionRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryDkgCompletionRequestsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub requests: ::prost::alloc::vec::Vec<DkgCompletionRequest>,
+}
 /// MsgSubmitWithdrawStatus defines the Msg/SubmitWithdrawStatus request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitWithdrawStatus {
@@ -341,6 +470,9 @@ pub struct MsgSubmitWithdrawTransaction {
     pub sender: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub blockhash: ::prost::alloc::string::String,
+    /// the previous tx bytes in base64 format
+    #[prost(string, tag = "3")]
+    pub prev_tx_bytes: ::prost::alloc::string::String,
     /// the tx bytes in base64 format
     #[prost(string, tag = "4")]
     pub tx_bytes: ::prost::alloc::string::String,
@@ -362,6 +494,44 @@ pub struct MsgWithdrawToBitcoin {
 /// MsgWithdrawToBitcoinResponse defines the Msg/WithdrawToBitcoin response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgWithdrawToBitcoinResponse {}
+/// MsgInitiateDKG is the Msg/InitiateDKG request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgInitiateDkg {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// expected participant set
+    #[prost(message, repeated, tag = "2")]
+    pub participants: ::prost::alloc::vec::Vec<DkgParticipant>,
+    /// threshold required to perform DKG
+    #[prost(uint32, tag = "3")]
+    pub threshold: u32,
+}
+/// MsgInitiateDKGResponse defines the Msg/InitiateDKG response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgInitiateDkgResponse {}
+/// MsgCompleteDKG is the Msg/CompleteDKG request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCompleteDkg {
+    /// the sender
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    /// DKG request id
+    #[prost(uint64, tag = "2")]
+    pub id: u64,
+    /// new vaults generated by DKG
+    #[prost(string, repeated, tag = "3")]
+    pub vaults: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// validator address
+    #[prost(string, tag = "4")]
+    pub validator: ::prost::alloc::string::String,
+    /// hex encoded validator signature
+    #[prost(string, tag = "5")]
+    pub signature: ::prost::alloc::string::String,
+}
+/// MsgCompleteDKGResponse defines the Msg/CompleteDKG response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgCompleteDkgResponse {}
 /// MsgUpdateParams is the Msg/UpdateParams request type.
 ///
 /// Since: cosmos-sdk 0.47
