@@ -43,8 +43,8 @@ pub struct Vault {
     #[prost(enumeration = "AssetType", tag = "3")]
     pub asset_type: i32,
     /// version
-    #[prost(int32, tag = "4")]
-    pub version: i32,
+    #[prost(uint64, tag = "4")]
+    pub version: u64,
 }
 /// ProtocolLimits defines the params related to the the protocol limitations
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -173,7 +173,10 @@ pub struct DkgParticipant {
     pub moniker: ::prost::alloc::string::String,
     /// the operator address of the corresponding validator
     #[prost(string, tag = "2")]
-    pub address: ::prost::alloc::string::String,
+    pub operator_address: ::prost::alloc::string::String,
+    /// the consensus address of the corresponding validator
+    #[prost(string, tag = "3")]
+    pub consensus_address: ::prost::alloc::string::String,
 }
 /// DKG Request
 #[derive(Clone, PartialEq, ::prost::Message)]
