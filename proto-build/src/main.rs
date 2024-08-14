@@ -210,6 +210,11 @@ fn update_submodules() {
     run_git(["submodule", "update", "--init"]);
     run_git(["-C", WASMD_DIR, "fetch"]);
     run_git(["-C", WASMD_DIR, "reset", "--hard", WASMD_REV]);
+
+    info!("Updating side submodule...");
+    run_git(["submodule", "update", "--init"]);
+    run_git(["-C", SIDE_DIR, "fetch"]);
+    run_git(["-C", SIDE_DIR, "reset", "--hard", SIDE_REV]);
 }
 
 fn output_sdk_version(out_dir: &Path) {
