@@ -179,7 +179,7 @@ pub struct DkgParticipant {
     pub consensus_address: ::prost::alloc::string::String,
 }
 /// DKG Request
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, )]
 pub struct DkgRequest {
     /// the unique request id
     #[prost(uint64, tag = "1")]
