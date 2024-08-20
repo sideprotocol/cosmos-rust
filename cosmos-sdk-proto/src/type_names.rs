@@ -28,9 +28,9 @@ impl_name!(
 );
 
 impl_name!(
-    side::btcbridge::MsgSubmitWithdrawStatus,
+    side::btcbridge::MsgSubmitWithdrawSignatures,
     "side.btcbridge",
-    "MsgSubmitWithdrawStatus"
+    "MsgSubmitWithdrawSignatures"
 );
 
 impl_name!(
@@ -48,7 +48,7 @@ impl_name!(
 impl_name!(
     side::btcbridge::MsgCompleteDkg,
     "side.btcbridge",
-    "MsgCompleteDkg"
+    "MsgCompleteDKG"
 );
 // end side chain
 
