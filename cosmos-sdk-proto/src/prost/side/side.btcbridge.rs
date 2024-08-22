@@ -221,11 +221,14 @@ pub struct DkgRequest {
     /// threshold required to perform DKG
     #[prost(uint32, tag = "3")]
     pub threshold: u32,
+    /// asset types of vaults to be generated
+    #[prost(enumeration = "AssetType", repeated, tag = "4")]
+    pub vault_types: ::prost::alloc::vec::Vec<i32>,
     /// expiration time
-    #[prost(message, optional, tag = "4")]
+    #[prost(message, optional, tag = "5")]
     pub expiration: ::core::option::Option<::prost_types::Timestamp>,
     /// status
-    #[prost(enumeration = "DkgRequestStatus", tag = "5")]
+    #[prost(enumeration = "DkgRequestStatus", tag = "6")]
     pub status: i32,
 }
 /// DKG Completion Request
@@ -567,6 +570,9 @@ pub struct MsgInitiateDkg {
     /// threshold required to perform DKG
     #[prost(uint32, tag = "3")]
     pub threshold: u32,
+    /// asset types of vaults to be generated
+    #[prost(enumeration = "AssetType", repeated, tag = "4")]
+    pub vault_types: ::prost::alloc::vec::Vec<i32>,
 }
 /// MsgInitiateDKGResponse defines the Msg/InitiateDKG response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
