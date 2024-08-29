@@ -303,7 +303,7 @@ impl DkgRequestStatus {
         }
     }
 }
-/// GenesisState defines the btc light client module's genesis state.
+/// GenesisState defines the btc bridge module's genesis state.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
