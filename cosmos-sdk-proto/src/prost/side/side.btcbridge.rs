@@ -11,17 +11,26 @@ pub struct Params {
     /// The denomination of the voucher
     #[prost(string, tag = "3")]
     pub btc_voucher_denom: ::prost::alloc::string::String,
+    /// Indicates if deposit is enabled
+    #[prost(bool, tag = "4")]
+    pub deposit_enabled: bool,
+    /// Indicates if withdrawal is enabled
+    #[prost(bool, tag = "5")]
+    pub withdraw_enabled: bool,
+    /// Authorized relayers for non-btc asset deposit
+    #[prost(string, repeated, tag = "6")]
+    pub non_btc_relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// Asset vaults
-    #[prost(message, repeated, tag = "4")]
+    #[prost(message, repeated, tag = "7")]
     pub vaults: ::prost::alloc::vec::Vec<Vault>,
     /// Protocol limitations
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag = "8")]
     pub protocol_limits: ::core::option::Option<ProtocolLimits>,
     /// Protocol fees
-    #[prost(message, optional, tag = "6")]
+    #[prost(message, optional, tag = "9")]
     pub protocol_fees: ::core::option::Option<ProtocolFees>,
     /// TSS params
-    #[prost(message, optional, tag = "7")]
+    #[prost(message, optional, tag = "10")]
     pub tss_params: ::core::option::Option<TssParams>,
 }
 /// Vault defines the asset vault
@@ -364,6 +373,22 @@ pub struct QueryWithdrawRequestByTxHashResponse {
     #[prost(message, optional, tag = "1")]
     pub request: ::core::option::Option<BitcoinWithdrawRequest>,
 }
+/// QueryWithdrawNetworkFeeRequest is request type for the Query/WithdrawNetworkFee RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawNetworkFeeRequest {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub amount: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub fee_rate: ::prost::alloc::string::String,
+}
+/// QueryWithdrawNetworkFeeResponse is response type for the Query/WithdrawNetworkFee RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawNetworkFeeResponse {
+    #[prost(int64, tag = "1")]
+    pub fee: i64,
+}
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryParamsRequest {}
@@ -486,6 +511,17 @@ pub struct MsgSubmitBlockHeaders {
 /// MsgSubmitBlockHeadersResponse defines the Msg/SubmitBlockHeaders response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitBlockHeadersResponse {}
+/// MsgUpdateNonBtcRelayers defines the Msg/UpdateNonBtcRelayers request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateNonBtcRelayers {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// MsgUpdateNonBtcRelayersResponse defines the Msg/UpdateNonBtcRelayers response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateNonBtcRelayersResponse {}
 /// MsgSubmitDepositTransaction defines the Msg/SubmitDepositTransaction request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitDepositTransaction {
