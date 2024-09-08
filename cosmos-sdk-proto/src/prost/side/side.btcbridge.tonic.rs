@@ -3,6 +3,8 @@
 #[cfg(feature = "grpc")]
 pub mod query_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use std::time::Duration;
+
     use tonic::codegen::http::Uri;
     use tonic::codegen::*;
     #[derive(Debug, Clone)]
@@ -18,6 +20,16 @@ pub mod query_client {
             D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect_timeout<D>(dst: D, du: Duration) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect_timeout(du).await?;
             Ok(Self::new(conn))
         }
     }
