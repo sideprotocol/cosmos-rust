@@ -11,23 +11,26 @@ pub struct Params {
     /// The denomination of the voucher
     #[prost(string, tag = "3")]
     pub btc_voucher_denom: ::prost::alloc::string::String,
+    /// Indicates if deposit is enabled
+    #[prost(bool, tag = "4")]
+    pub deposit_enabled: bool,
+    /// Indicates if withdrawal is enabled
+    #[prost(bool, tag = "5")]
+    pub withdraw_enabled: bool,
+    /// Authorized relayers for non-btc asset deposit
+    #[prost(string, repeated, tag = "6")]
+    pub non_btc_relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// Asset vaults
-    #[prost(message, repeated, tag = "4")]
+    #[prost(message, repeated, tag = "7")]
     pub vaults: ::prost::alloc::vec::Vec<Vault>,
     /// Protocol limitations
-    #[prost(message, optional, tag = "5")]
+    #[prost(message, optional, tag = "8")]
     pub protocol_limits: ::core::option::Option<ProtocolLimits>,
     /// Protocol fees
-    #[prost(message, optional, tag = "6")]
-    pub protocol_fees: ::core::option::Option<ProtocolFees>,
-    /// Network fee for withdrawal to bitcoin
-    #[prost(int64, tag = "7")]
-    pub network_fee: i64,
-    /// Reward epoch for relayer and TSS participant incentivization
-    #[prost(message, optional, tag = "8")]
-    pub reward_epoch: ::core::option::Option<::prost_types::Duration>,
-    /// TSS params
     #[prost(message, optional, tag = "9")]
+    pub protocol_fees: ::core::option::Option<ProtocolFees>,
+    /// TSS params
+    #[prost(message, optional, tag = "10")]
     pub tss_params: ::core::option::Option<TssParams>,
 }
 /// Vault defines the asset vault
@@ -49,23 +52,23 @@ pub struct Vault {
 /// ProtocolLimits defines the params related to the the protocol limitations
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ProtocolLimits {
-    /// The minimum deposit amount for btc
+    /// The minimum deposit amount for btc in sat
     #[prost(int64, tag = "1")]
     pub btc_min_deposit: i64,
-    /// The minimum withdrawal amount for btc
+    /// The minimum withdrawal amount for btc in sat
     #[prost(int64, tag = "2")]
     pub btc_min_withdraw: i64,
-    /// The maximum withdrawal amount for btc
+    /// The maximum withdrawal amount for btc in sat
     #[prost(int64, tag = "3")]
     pub btc_max_withdraw: i64,
 }
 /// ProtocolFees defines the params related to the protocol fees
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ProtocolFees {
-    /// Protocol fee amount for deposit
+    /// Protocol fee amount for deposit in sat
     #[prost(int64, tag = "1")]
     pub deposit_fee: i64,
-    /// Protocol fee amount for withdrawal
+    /// Protocol fee amount for withdrawal in sat
     #[prost(int64, tag = "2")]
     pub withdraw_fee: i64,
     /// Protocol fee collector
@@ -75,7 +78,7 @@ pub struct ProtocolFees {
 /// TSSParams defines the params related to TSS
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TssParams {
-    /// timeout duration for DKG request
+    /// Timeout duration for DKG request
     #[prost(message, optional, tag = "1")]
     pub dkg_timeout_period: ::core::option::Option<::prost_types::Duration>,
     /// Transition period after which TSS participants update process is completed
@@ -210,7 +213,7 @@ pub struct DkgParticipant {
     pub consensus_address: ::prost::alloc::string::String,
 }
 /// DKG Request
-#[derive(Clone, PartialEq, ::prost::Message, )]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DkgRequest {
     /// the unique request id
     #[prost(uint64, tag = "1")]
@@ -221,11 +224,14 @@ pub struct DkgRequest {
     /// threshold required to perform DKG
     #[prost(uint32, tag = "3")]
     pub threshold: u32,
+    /// asset types of vaults to be generated
+    #[prost(enumeration = "AssetType", repeated, tag = "4")]
+    pub vault_types: ::prost::alloc::vec::Vec<i32>,
     /// expiration time
-    #[prost(message, optional, tag = "4")]
+    #[prost(message, optional, tag = "5")]
     pub expiration: ::core::option::Option<::prost_types::Timestamp>,
     /// status
-    #[prost(enumeration = "DkgRequestStatus", tag = "5")]
+    #[prost(enumeration = "DkgRequestStatus", tag = "6")]
     pub status: i32,
 }
 /// DKG Completion Request
@@ -306,7 +312,7 @@ impl DkgRequestStatus {
         }
     }
 }
-/// GenesisState defines the btc light client module's genesis state.
+/// GenesisState defines the btc bridge module's genesis state.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, optional, tag = "1")]
@@ -366,6 +372,22 @@ pub struct QueryWithdrawRequestByTxHashRequest {
 pub struct QueryWithdrawRequestByTxHashResponse {
     #[prost(message, optional, tag = "1")]
     pub request: ::core::option::Option<BitcoinWithdrawRequest>,
+}
+/// QueryWithdrawNetworkFeeRequest is request type for the Query/WithdrawNetworkFee RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawNetworkFeeRequest {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub amount: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub fee_rate: ::prost::alloc::string::String,
+}
+/// QueryWithdrawNetworkFeeResponse is response type for the Query/WithdrawNetworkFee RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawNetworkFeeResponse {
+    #[prost(int64, tag = "1")]
+    pub fee: i64,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -489,6 +511,17 @@ pub struct MsgSubmitBlockHeaders {
 /// MsgSubmitBlockHeadersResponse defines the Msg/SubmitBlockHeaders response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitBlockHeadersResponse {}
+/// MsgUpdateNonBtcRelayers defines the Msg/UpdateNonBtcRelayers request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateNonBtcRelayers {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// MsgUpdateNonBtcRelayersResponse defines the Msg/UpdateNonBtcRelayers response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateNonBtcRelayersResponse {}
 /// MsgSubmitDepositTransaction defines the Msg/SubmitDepositTransaction request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitDepositTransaction {
@@ -567,6 +600,9 @@ pub struct MsgInitiateDkg {
     /// threshold required to perform DKG
     #[prost(uint32, tag = "3")]
     pub threshold: u32,
+    /// asset types of vaults to be generated
+    #[prost(enumeration = "AssetType", repeated, tag = "4")]
+    pub vault_types: ::prost::alloc::vec::Vec<i32>,
 }
 /// MsgInitiateDKGResponse defines the Msg/InitiateDKG response type.
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -250,6 +250,30 @@ pub mod query_client {
             ));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn query_withdraw_network_fee(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryWithdrawNetworkFeeRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryWithdrawNetworkFeeResponse>,
+            tonic::Status,
+        > {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/side.btcbridge.Query/QueryWithdrawNetworkFee",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut().insert(GrpcMethod::new(
+                "side.btcbridge.Query",
+                "QueryWithdrawNetworkFee",
+            ));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn query_utx_os(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryUtxOsRequest>,
@@ -420,6 +444,13 @@ pub mod query_server {
             request: tonic::Request<super::QueryWithdrawRequestByTxHashRequest>,
         ) -> std::result::Result<
             tonic::Response<super::QueryWithdrawRequestByTxHashResponse>,
+            tonic::Status,
+        >;
+        async fn query_withdraw_network_fee(
+            &self,
+            request: tonic::Request<super::QueryWithdrawNetworkFeeRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryWithdrawNetworkFeeResponse>,
             tonic::Status,
         >;
         async fn query_utx_os(
@@ -797,6 +828,48 @@ pub mod query_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = QueryWithdrawRequestByTxHashSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Query/QueryWithdrawNetworkFee" => {
+                    #[allow(non_camel_case_types)]
+                    struct QueryWithdrawNetworkFeeSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query>
+                        tonic::server::UnaryService<super::QueryWithdrawNetworkFeeRequest>
+                        for QueryWithdrawNetworkFeeSvc<T>
+                    {
+                        type Response = super::QueryWithdrawNetworkFeeResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::QueryWithdrawNetworkFeeRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut =
+                                async move { (*inner).query_withdraw_network_fee(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = QueryWithdrawNetworkFeeSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -1193,6 +1266,29 @@ pub mod msg_client {
                 .insert(GrpcMethod::new("side.btcbridge.Msg", "SubmitBlockHeaders"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn update_non_btc_relayers(
+            &mut self,
+            request: impl tonic::IntoRequest<super::MsgUpdateNonBtcRelayers>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateNonBtcRelayersResponse>,
+            tonic::Status,
+        > {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/side.btcbridge.Msg/UpdateNonBtcRelayers");
+            let mut req = request.into_request();
+            req.extensions_mut().insert(GrpcMethod::new(
+                "side.btcbridge.Msg",
+                "UpdateNonBtcRelayers",
+            ));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn submit_deposit_transaction(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgSubmitDepositTransaction>,
@@ -1352,6 +1448,13 @@ pub mod msg_server {
             &self,
             request: tonic::Request<super::MsgSubmitBlockHeaders>,
         ) -> std::result::Result<tonic::Response<super::MsgSubmitBlockHeadersResponse>, tonic::Status>;
+        async fn update_non_btc_relayers(
+            &self,
+            request: tonic::Request<super::MsgUpdateNonBtcRelayers>,
+        ) -> std::result::Result<
+            tonic::Response<super::MsgUpdateNonBtcRelayersResponse>,
+            tonic::Status,
+        >;
         async fn submit_deposit_transaction(
             &self,
             request: tonic::Request<super::MsgSubmitDepositTransaction>,
@@ -1491,6 +1594,47 @@ pub mod msg_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = SubmitBlockHeadersSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Msg/UpdateNonBtcRelayers" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateNonBtcRelayersSvc<T: Msg>(pub Arc<T>);
+                    impl<T: Msg> tonic::server::UnaryService<super::MsgUpdateNonBtcRelayers>
+                        for UpdateNonBtcRelayersSvc<T>
+                    {
+                        type Response = super::MsgUpdateNonBtcRelayersResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::MsgUpdateNonBtcRelayers>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut =
+                                async move { (*inner).update_non_btc_relayers(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = UpdateNonBtcRelayersSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
