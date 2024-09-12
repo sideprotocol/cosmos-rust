@@ -28,9 +28,9 @@ impl_name!(
 );
 
 impl_name!(
-    side::btcbridge::MsgSubmitWithdrawSignatures,
+    side::btcbridge::MsgSubmitSignatures,
     "side.btcbridge",
-    "MsgSubmitWithdrawSignatures"
+    "MsgSubmitSignatures"
 );
 
 impl_name!(
