@@ -19,18 +19,24 @@ pub struct Params {
     pub withdraw_enabled: bool,
     /// Trusted relayers for non-btc asset deposit
     #[prost(string, repeated, tag = "6")]
-    pub non_btc_relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    pub trusted_non_btc_relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// Trusted oracles for providing offchain data, e.g. bitcoin fee rate
+    #[prost(string, repeated, tag = "7")]
+    pub trusted_oracles: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// Asset vaults
-    #[prost(message, repeated, tag = "7")]
+    #[prost(message, repeated, tag = "8")]
     pub vaults: ::prost::alloc::vec::Vec<Vault>,
+    /// Withdrawal params
+    #[prost(message, optional, tag = "9")]
+    pub withdraw_params: ::core::option::Option<WithdrawParams>,
     /// Protocol limitations
-    #[prost(message, optional, tag = "8")]
+    #[prost(message, optional, tag = "10")]
     pub protocol_limits: ::core::option::Option<ProtocolLimits>,
     /// Protocol fees
-    #[prost(message, optional, tag = "9")]
+    #[prost(message, optional, tag = "11")]
     pub protocol_fees: ::core::option::Option<ProtocolFees>,
     /// TSS params
-    #[prost(message, optional, tag = "10")]
+    #[prost(message, optional, tag = "12")]
     pub tss_params: ::core::option::Option<TssParams>,
 }
 /// Vault defines the asset vault
@@ -48,6 +54,18 @@ pub struct Vault {
     /// version
     #[prost(uint64, tag = "4")]
     pub version: u64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WithdrawParams {
+    /// Maximum number of utxos used to build the signing request; O means unlimited
+    #[prost(uint32, tag = "1")]
+    pub max_utxo_num: u32,
+    /// Period for handling btc withdrawal requests
+    #[prost(int64, tag = "2")]
+    pub btc_batch_withdraw_period: i64,
+    /// Maximum number of btc withdrawal requests to be handled per batch
+    #[prost(uint32, tag = "3")]
+    pub max_btc_batch_withdraw_num: u32,
 }
 /// ProtocolLimits defines the params related to the the protocol limitations
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -148,6 +166,18 @@ pub struct SigningRequest {
     #[prost(enumeration = "SigningStatus", tag = "5")]
     pub status: i32,
 }
+/// Withdrawal Request
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct WithdrawRequest {
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub amount: ::prost::alloc::string::String,
+    #[prost(uint64, tag = "3")]
+    pub sequence: u64,
+    #[prost(string, tag = "4")]
+    pub txid: ::prost::alloc::string::String,
+}
 /// Bitcoin UTXO
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Utxo {
@@ -198,6 +228,29 @@ pub struct Edict {
     pub amount: ::prost::alloc::string::String,
     #[prost(uint32, tag = "3")]
     pub output: u32,
+}
+/// BTC UTXO Consolidation
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BtcConsolidation {
+    /// maximum threshold of the btc value
+    #[prost(int64, tag = "1")]
+    pub target_threshold: i64,
+    /// maximum number of the utxos to be consolidated; 0 means all
+    #[prost(uint32, tag = "2")]
+    pub max_num: u32,
+}
+/// Runes UTXO Consolidation
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RunesConsolidation {
+    /// rune id
+    #[prost(string, tag = "1")]
+    pub rune_id: ::prost::alloc::string::String,
+    /// maximum threshold of the corresponding rune balance
+    #[prost(string, tag = "2")]
+    pub target_threshold: ::prost::alloc::string::String,
+    /// maximum number of the utxos to be consolidated; 0 means all
+    #[prost(uint32, tag = "3")]
+    pub max_num: u32,
 }
 /// DKG Participant
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -337,6 +390,52 @@ pub struct GenesisState {
     #[prost(message, repeated, tag = "4")]
     pub utxos: ::prost::alloc::vec::Vec<Utxo>,
 }
+/// QueryWithdrawRequestsByAddressRequest is request type for the Query/WithdrawRequestsByAddress RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawRequestsByAddressRequest {
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "2")]
+    pub pagination:
+        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+}
+/// QueryWithdrawRequestsByAddressResponse is response type for the Query/WithdrawRequestsByAddress RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawRequestsByAddressResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub requests: ::prost::alloc::vec::Vec<WithdrawRequest>,
+    #[prost(message, optional, tag = "2")]
+    pub pagination:
+        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+}
+/// QueryWithdrawRequestsByTxHashRequest is request type for the Query/WithdrawRequestsByTxHash RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawRequestsByTxHashRequest {
+    #[prost(string, tag = "1")]
+    pub txid: ::prost::alloc::string::String,
+}
+/// QueryWithdrawRequestsByTxHashResponse is response type for the Query/WithdrawRequestsByTxHash RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawRequestsByTxHashResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub requests: ::prost::alloc::vec::Vec<WithdrawRequest>,
+}
+/// QueryPendingBtcWithdrawRequestsRequest is request type for the Query/PendingBtcWithdrawRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryPendingBtcWithdrawRequestsRequest {
+    #[prost(message, optional, tag = "1")]
+    pub pagination:
+        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+}
+/// QueryPendingBtcWithdrawRequestsResponse is response type for the Query/PendingBtcWithdrawRequests RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryPendingBtcWithdrawRequestsResponse {
+    #[prost(message, repeated, tag = "1")]
+    pub requests: ::prost::alloc::vec::Vec<WithdrawRequest>,
+    #[prost(message, optional, tag = "2")]
+    pub pagination:
+        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+}
 /// QuerySigningRequestsRequest is request type for the Query/SigningRequests RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QuerySigningRequestsRequest {
@@ -385,21 +484,14 @@ pub struct QuerySigningRequestByTxHashResponse {
     #[prost(message, optional, tag = "1")]
     pub request: ::core::option::Option<SigningRequest>,
 }
-/// QueryWithdrawNetworkFeeRequest is request type for the Query/WithdrawNetworkFee RPC method.
+/// QueryFeeRateRequest is request type for the Query/FeeRate RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryWithdrawNetworkFeeRequest {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub amount: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub fee_rate: ::prost::alloc::string::String,
-}
-/// QueryWithdrawNetworkFeeResponse is response type for the Query/WithdrawNetworkFee RPC method.
+pub struct QueryFeeRateRequest {}
+/// QueryFeeRateResponse is response type for the Query/FeeRate RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryWithdrawNetworkFeeResponse {
+pub struct QueryFeeRateResponse {
     #[prost(int64, tag = "1")]
-    pub fee: i64,
+    pub fee_rate: i64,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -539,17 +631,6 @@ pub struct MsgSubmitBlockHeaders {
 /// MsgSubmitBlockHeadersResponse defines the Msg/SubmitBlockHeaders response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitBlockHeadersResponse {}
-/// MsgUpdateNonBtcRelayers defines the Msg/UpdateNonBtcRelayers request type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateNonBtcRelayers {
-    #[prost(string, tag = "1")]
-    pub sender: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "2")]
-    pub relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-}
-/// MsgUpdateNonBtcRelayersResponse defines the Msg/UpdateNonBtcRelayers response type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateNonBtcRelayersResponse {}
 /// MsgSubmitDepositTransaction defines the Msg/SubmitDepositTransaction request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitDepositTransaction {
@@ -588,6 +669,39 @@ pub struct MsgSubmitWithdrawTransaction {
 /// MsgSubmitWithdrawTransactionResponse defines the Msg/SubmitWithdrawTransaction response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitWithdrawTransactionResponse {}
+/// MsgSubmitFeeRate defines the Msg/SubmitFeeRate request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgSubmitFeeRate {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(int64, tag = "2")]
+    pub fee_rate: i64,
+}
+/// MsgSubmitFeeRateResponse defines the Msg/SubmitFeeRate response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgSubmitFeeRateResponse {}
+/// MsgUpdateTrustedNonBtcRelayers defines the Msg/UpdateTrustedNonBtcRelayers request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateTrustedNonBtcRelayers {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// MsgUpdateTrustedNonBtcRelayersResponse defines the Msg/UpdateTrustedNonBtcRelayers response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateTrustedNonBtcRelayersResponse {}
+/// MsgUpdateTrustedOracles defines the Msg/UpdateTrustedOracles request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateTrustedOracles {
+    #[prost(string, tag = "1")]
+    pub sender: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "2")]
+    pub oracles: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// MsgUpdateTrustedOraclesResponse defines the Msg/UpdateTrustedOracles response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgUpdateTrustedOraclesResponse {}
 /// MsgWithdrawToBitcoin defines the Msg/WithdrawToBitcoin request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgWithdrawToBitcoin {
@@ -596,9 +710,6 @@ pub struct MsgWithdrawToBitcoin {
     /// withdraw amount in satoshi, etc: 100000000sat = 1btc
     #[prost(string, tag = "2")]
     pub amount: ::prost::alloc::string::String,
-    /// fee rate in sats/vB
-    #[prost(string, tag = "3")]
-    pub fee_rate: ::prost::alloc::string::String,
 }
 /// MsgWithdrawToBitcoinResponse defines the Msg/WithdrawToBitcoin response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -616,6 +727,28 @@ pub struct MsgSubmitSignatures {
 /// MsgSubmitSignaturesResponse defines the Msg/SubmitSignatures response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitSignaturesResponse {}
+/// MsgConsolidateVaults is the Msg/ConsolidateVaults request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgConsolidateVaults {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// vault version
+    #[prost(uint64, tag = "2")]
+    pub vault_version: u64,
+    /// fee rate
+    #[prost(int64, tag = "3")]
+    pub fee_rate: i64,
+    /// btc consolidation
+    #[prost(message, optional, tag = "4")]
+    pub btc_consolidation: ::core::option::Option<BtcConsolidation>,
+    /// runes consolidations
+    #[prost(message, repeated, tag = "5")]
+    pub runes_consolidations: ::prost::alloc::vec::Vec<RunesConsolidation>,
+}
+/// MsgConsolidateVaultsResponse defines the Msg/ConsolidateVaults response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgConsolidateVaultsResponse {}
 /// MsgInitiateDKG is the Msg/InitiateDKG request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgInitiateDkg {
