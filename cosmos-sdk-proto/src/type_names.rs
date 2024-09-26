@@ -40,6 +40,12 @@ impl_name!(
 );
 
 impl_name!(
+    side::btcbridge::MsgSubmitFeeRate,
+    "side.btcbridge",
+    "MsgSubmitFeeRate"
+);
+
+impl_name!(
     side::btcbridge::MsgWithdrawToBitcoin,
     "side.btcbridge",
     "MsgWithdrawToBitcoin"
