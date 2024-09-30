@@ -187,6 +187,30 @@ pub mod query_client {
                 .insert(GrpcMethod::new("side.btcbridge.Query", "QueryFeeRate"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn query_withdrawal_network_fee(
+            &mut self,
+            request: impl tonic::IntoRequest<super::QueryWithdrawalNetworkFeeRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryWithdrawalNetworkFeeResponse>,
+            tonic::Status,
+        > {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/side.btcbridge.Query/QueryWithdrawalNetworkFee",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut().insert(GrpcMethod::new(
+                "side.btcbridge.Query",
+                "QueryWithdrawalNetworkFee",
+            ));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn query_withdraw_requests_by_address(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryWithdrawRequestsByAddressRequest>,
@@ -510,6 +534,13 @@ pub mod query_server {
             &self,
             request: tonic::Request<super::QueryFeeRateRequest>,
         ) -> std::result::Result<tonic::Response<super::QueryFeeRateResponse>, tonic::Status>;
+        async fn query_withdrawal_network_fee(
+            &self,
+            request: tonic::Request<super::QueryWithdrawalNetworkFeeRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::QueryWithdrawalNetworkFeeResponse>,
+            tonic::Status,
+        >;
         async fn query_withdraw_requests_by_address(
             &self,
             request: tonic::Request<super::QueryWithdrawRequestsByAddressRequest>,
@@ -842,6 +873,48 @@ pub mod query_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = QueryFeeRateSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/side.btcbridge.Query/QueryWithdrawalNetworkFee" => {
+                    #[allow(non_camel_case_types)]
+                    struct QueryWithdrawalNetworkFeeSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query>
+                        tonic::server::UnaryService<super::QueryWithdrawalNetworkFeeRequest>
+                        for QueryWithdrawalNetworkFeeSvc<T>
+                    {
+                        type Response = super::QueryWithdrawalNetworkFeeResponse;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::QueryWithdrawalNetworkFeeRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut =
+                                async move { (*inner).query_withdrawal_network_fee(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = QueryWithdrawalNetworkFeeSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

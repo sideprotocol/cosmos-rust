@@ -396,8 +396,7 @@ pub struct QueryWithdrawRequestsByAddressRequest {
     #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "2")]
-    pub pagination:
-        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+    pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
 /// QueryWithdrawRequestsByAddressResponse is response type for the Query/WithdrawRequestsByAddress RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -424,8 +423,7 @@ pub struct QueryWithdrawRequestsByTxHashResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPendingBtcWithdrawRequestsRequest {
     #[prost(message, optional, tag = "1")]
-    pub pagination:
-        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+    pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
 /// QueryPendingBtcWithdrawRequestsResponse is response type for the Query/PendingBtcWithdrawRequests RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -442,8 +440,7 @@ pub struct QuerySigningRequestsRequest {
     #[prost(enumeration = "SigningStatus", tag = "1")]
     pub status: i32,
     #[prost(message, optional, tag = "2")]
-    pub pagination:
-        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+    pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
 /// QuerySigningRequestsResponse is response type for the Query/SigningRequests RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -460,8 +457,7 @@ pub struct QuerySigningRequestsByAddressRequest {
     #[prost(string, tag = "1")]
     pub address: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "2")]
-    pub pagination:
-        ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageResponse>,
+    pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
 /// QuerySigningRequestsByAddressResponse is response type for the Query/SigningRequestsByAddress RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -492,6 +488,24 @@ pub struct QueryFeeRateRequest {}
 pub struct QueryFeeRateResponse {
     #[prost(int64, tag = "1")]
     pub fee_rate: i64,
+}
+/// QueryWithdrawalNetworkFeeRequest is request type for the Query/WithdrawalNetworkFee RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawalNetworkFeeRequest {
+    #[prost(string, tag = "1")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub amount: ::prost::alloc::string::String,
+    #[prost(int64, tag = "3")]
+    pub fee_rate: i64,
+}
+/// QueryWithdrawalNetworkFeeResponse is response type for the Query/WithdrawalNetworkFee RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct QueryWithdrawalNetworkFeeResponse {
+    #[prost(int64, tag = "1")]
+    pub fee_rate: i64,
+    #[prost(string, tag = "2")]
+    pub fee: ::prost::alloc::string::String,
 }
 /// QueryParamsRequest is request type for the Query/Params RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
