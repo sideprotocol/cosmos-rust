@@ -17,8 +17,9 @@ pub mod query_client {
             D: TryInto<tonic::transport::Endpoint>,
             D::Error: Into<StdError>,
         {
-            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
-            conn.connect_timeout(Duration::from_secs(10));
+            let builder = tonic::transport::Endpoint::new(dst)?;
+            builder.connect_timeout(Duration::from_secs(10));
+            let conn = builder.connect().await?;
             Ok(Self::new(conn))
         }
     }
