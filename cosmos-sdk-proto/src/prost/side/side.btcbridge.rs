@@ -159,11 +159,13 @@ pub struct SigningRequest {
     pub address: ::prost::alloc::string::String,
     #[prost(uint64, tag = "2")]
     pub sequence: u64,
-    #[prost(string, tag = "3")]
-    pub txid: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "3")]
+    pub creation_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag = "4")]
+    pub txid: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
     pub psbt: ::prost::alloc::string::String,
-    #[prost(enumeration = "SigningStatus", tag = "5")]
+    #[prost(enumeration = "SigningStatus", tag = "6")]
     pub status: i32,
 }
 /// Withdrawal Request
@@ -330,7 +332,7 @@ pub enum SigningStatus {
     Broadcasted = 2,
     /// SIGNING_STATUS_CONFIRMED - The signing request is confirmed
     Confirmed = 3,
-    /// SIGNING_STATUS_FAILED - The signing request failed to broadcast due to invalid inputs or non-standardness
+    /// SIGNING_STATUS_FAILED - The signing request failed to be signed or broadcast due to unexpected exceptions
     Failed = 4,
 }
 impl SigningStatus {
