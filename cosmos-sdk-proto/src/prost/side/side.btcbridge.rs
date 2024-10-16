@@ -159,12 +159,12 @@ pub struct SigningRequest {
     pub address: ::prost::alloc::string::String,
     #[prost(uint64, tag = "2")]
     pub sequence: u64,
-    #[prost(message, optional, tag = "3")]
-    pub creation_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(string, tag = "4")]
+    #[prost(string, tag = "3")]
     pub txid: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
+    #[prost(string, tag = "4")]
     pub psbt: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "5")]
+    pub creation_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(enumeration = "SigningStatus", tag = "6")]
     pub status: i32,
 }
