@@ -102,6 +102,9 @@ pub struct TssParams {
     /// Transition period after which TSS participants update process is completed
     #[prost(message, optional, tag = "2")]
     pub participant_update_transition_period: ::core::option::Option<::prost_types::Duration>,
+    /// Duration per signing epoch
+    #[prost(message, optional, tag = "3")]
+    pub signing_epoch_duration: ::core::option::Option<::prost_types::Duration>,
 }
 /// AssetType defines the type of asset
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -743,6 +746,19 @@ pub struct MsgSubmitSignatures {
 /// MsgSubmitSignaturesResponse defines the Msg/SubmitSignatures response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitSignaturesResponse {}
+/// MsgTerminateSigningRequests is the Msg/TerminateSigningRequests request type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgTerminateSigningRequests {
+    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
+    #[prost(string, tag = "1")]
+    pub authority: ::prost::alloc::string::String,
+    /// vault version
+    #[prost(uint64, tag = "2")]
+    pub vault_version: u64,
+}
+/// MsgTerminateSigningRequestsResponse defines the Msg/TerminateSigningRequests response type.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MsgTerminateSigningRequestsResponse {}
 /// MsgConsolidateVaults is the Msg/ConsolidateVaults request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgConsolidateVaults {
