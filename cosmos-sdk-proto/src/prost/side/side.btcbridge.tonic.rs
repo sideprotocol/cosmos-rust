@@ -1764,30 +1764,6 @@ pub mod msg_client {
                 .insert(GrpcMethod::new("side.btcbridge.Msg", "SubmitSignatures"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn terminate_signing_requests(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgTerminateSigningRequests>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgTerminateSigningRequestsResponse>,
-            tonic::Status,
-        > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/side.btcbridge.Msg/TerminateSigningRequests",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "side.btcbridge.Msg",
-                "TerminateSigningRequests",
-            ));
-            self.inner.unary(req, path, codec).await
-        }
         pub async fn consolidate_vaults(
             &mut self,
             request: impl tonic::IntoRequest<super::MsgConsolidateVaults>,
@@ -1933,13 +1909,6 @@ pub mod msg_server {
             &self,
             request: tonic::Request<super::MsgSubmitSignatures>,
         ) -> std::result::Result<tonic::Response<super::MsgSubmitSignaturesResponse>, tonic::Status>;
-        async fn terminate_signing_requests(
-            &self,
-            request: tonic::Request<super::MsgTerminateSigningRequests>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgTerminateSigningRequestsResponse>,
-            tonic::Status,
-        >;
         async fn consolidate_vaults(
             &self,
             request: tonic::Request<super::MsgConsolidateVaults>,
@@ -2340,47 +2309,6 @@ pub mod msg_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = SubmitSignaturesSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/side.btcbridge.Msg/TerminateSigningRequests" => {
-                    #[allow(non_camel_case_types)]
-                    struct TerminateSigningRequestsSvc<T: Msg>(pub Arc<T>);
-                    impl<T: Msg> tonic::server::UnaryService<super::MsgTerminateSigningRequests>
-                        for TerminateSigningRequestsSvc<T>
-                    {
-                        type Response = super::MsgTerminateSigningRequestsResponse;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgTerminateSigningRequests>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { (*inner).terminate_signing_requests(request).await };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let inner = inner.0;
-                        let method = TerminateSigningRequestsSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

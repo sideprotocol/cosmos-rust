@@ -23,20 +23,23 @@ pub struct Params {
     /// Trusted oracles for providing offchain data, e.g. bitcoin fee rate
     #[prost(string, repeated, tag = "7")]
     pub trusted_oracles: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// Period of validity for the fee rate
+    #[prost(int64, tag = "8")]
+    pub fee_rate_validity_period: i64,
     /// Asset vaults
-    #[prost(message, repeated, tag = "8")]
+    #[prost(message, repeated, tag = "9")]
     pub vaults: ::prost::alloc::vec::Vec<Vault>,
     /// Withdrawal params
-    #[prost(message, optional, tag = "9")]
+    #[prost(message, optional, tag = "10")]
     pub withdraw_params: ::core::option::Option<WithdrawParams>,
     /// Protocol limitations
-    #[prost(message, optional, tag = "10")]
+    #[prost(message, optional, tag = "11")]
     pub protocol_limits: ::core::option::Option<ProtocolLimits>,
     /// Protocol fees
-    #[prost(message, optional, tag = "11")]
+    #[prost(message, optional, tag = "12")]
     pub protocol_fees: ::core::option::Option<ProtocolFees>,
     /// TSS params
-    #[prost(message, optional, tag = "12")]
+    #[prost(message, optional, tag = "13")]
     pub tss_params: ::core::option::Option<TssParams>,
 }
 /// Vault defines the asset vault
@@ -102,9 +105,6 @@ pub struct TssParams {
     /// Transition period after which TSS participants update process is completed
     #[prost(message, optional, tag = "2")]
     pub participant_update_transition_period: ::core::option::Option<::prost_types::Duration>,
-    /// Duration per signing epoch
-    #[prost(message, optional, tag = "3")]
-    pub signing_epoch_duration: ::core::option::Option<::prost_types::Duration>,
 }
 /// AssetType defines the type of asset
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -154,6 +154,16 @@ pub struct BlockHeader {
     pub time: u64,
     #[prost(uint64, tag = "9")]
     pub ntx: u64,
+}
+/// Fee rate
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FeeRate {
+    /// fee rate
+    #[prost(int64, tag = "1")]
+    pub value: i64,
+    /// block height at which the fee rate is submitted
+    #[prost(int64, tag = "2")]
+    pub height: i64,
 }
 /// Bitcoin Signing Request
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -285,23 +295,17 @@ pub struct DkgRequest {
     /// asset types of vaults to be generated
     #[prost(enumeration = "AssetType", repeated, tag = "4")]
     pub vault_types: ::prost::alloc::vec::Vec<i32>,
-    /// indicates if disabling bridge deposit and withdrawal
-    #[prost(bool, tag = "5")]
-    pub disable_bridge: bool,
     /// indicates if transferring assets to the newly generated vaults when the DKG request is completed
-    #[prost(bool, tag = "6")]
+    #[prost(bool, tag = "5")]
     pub enable_transfer: bool,
     /// target number of the UTXOs to be transferred each time
-    #[prost(uint32, tag = "7")]
+    #[prost(uint32, tag = "6")]
     pub target_utxo_num: u32,
-    /// fee rate for vault transfer
-    #[prost(string, tag = "8")]
-    pub fee_rate: ::prost::alloc::string::String,
     /// expiration time
-    #[prost(message, optional, tag = "9")]
+    #[prost(message, optional, tag = "7")]
     pub expiration: ::core::option::Option<::prost_types::Timestamp>,
     /// status
-    #[prost(enumeration = "DkgRequestStatus", tag = "10")]
+    #[prost(enumeration = "DkgRequestStatus", tag = "8")]
     pub status: i32,
 }
 /// DKG Completion Request
@@ -491,8 +495,8 @@ pub struct QueryFeeRateRequest {}
 /// QueryFeeRateResponse is response type for the Query/FeeRate RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryFeeRateResponse {
-    #[prost(int64, tag = "1")]
-    pub fee_rate: i64,
+    #[prost(message, optional, tag = "1")]
+    pub fee_rate: ::core::option::Option<FeeRate>,
 }
 /// QueryWithdrawalNetworkFeeRequest is request type for the Query/WithdrawalNetworkFee RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -746,19 +750,6 @@ pub struct MsgSubmitSignatures {
 /// MsgSubmitSignaturesResponse defines the Msg/SubmitSignatures response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgSubmitSignaturesResponse {}
-/// MsgTerminateSigningRequests is the Msg/TerminateSigningRequests request type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgTerminateSigningRequests {
-    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
-    #[prost(string, tag = "1")]
-    pub authority: ::prost::alloc::string::String,
-    /// vault version
-    #[prost(uint64, tag = "2")]
-    pub vault_version: u64,
-}
-/// MsgTerminateSigningRequestsResponse defines the Msg/TerminateSigningRequests response type.
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgTerminateSigningRequestsResponse {}
 /// MsgConsolidateVaults is the Msg/ConsolidateVaults request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgConsolidateVaults {
@@ -768,14 +759,11 @@ pub struct MsgConsolidateVaults {
     /// vault version
     #[prost(uint64, tag = "2")]
     pub vault_version: u64,
-    /// fee rate
-    #[prost(int64, tag = "3")]
-    pub fee_rate: i64,
     /// btc consolidation
-    #[prost(message, optional, tag = "4")]
+    #[prost(message, optional, tag = "3")]
     pub btc_consolidation: ::core::option::Option<BtcConsolidation>,
     /// runes consolidations
-    #[prost(message, repeated, tag = "5")]
+    #[prost(message, repeated, tag = "4")]
     pub runes_consolidations: ::prost::alloc::vec::Vec<RunesConsolidation>,
 }
 /// MsgConsolidateVaultsResponse defines the Msg/ConsolidateVaults response type.
@@ -796,18 +784,12 @@ pub struct MsgInitiateDkg {
     /// asset types of vaults to be generated
     #[prost(enumeration = "AssetType", repeated, tag = "4")]
     pub vault_types: ::prost::alloc::vec::Vec<i32>,
-    /// indicates if disabling bridge functionalities including deposit and withdrawal
-    #[prost(bool, tag = "5")]
-    pub disable_bridge: bool,
     /// indicates if transferring the current vaults to the newly generated vaults when the DKG request is completed
-    #[prost(bool, tag = "6")]
+    #[prost(bool, tag = "5")]
     pub enable_transfer: bool,
     /// target number of the UTXOs to be transferred each time
-    #[prost(uint32, tag = "7")]
+    #[prost(uint32, tag = "6")]
     pub target_utxo_num: u32,
-    /// fee rate for vault transfer
-    #[prost(string, tag = "8")]
-    pub fee_rate: ::prost::alloc::string::String,
 }
 /// MsgInitiateDKGResponse defines the Msg/InitiateDKG response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -855,9 +837,6 @@ pub struct MsgTransferVault {
     /// target number of the UTXOs to be transferred; only take effect when psbt not provided
     #[prost(uint32, tag = "6")]
     pub target_utxo_num: u32,
-    /// fee rate; only take effect when psbt not provided
-    #[prost(string, tag = "7")]
-    pub fee_rate: ::prost::alloc::string::String,
 }
 /// MsgTransferVaultResponse defines the Msg/TransferVault response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
