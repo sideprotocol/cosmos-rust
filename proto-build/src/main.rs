@@ -29,7 +29,7 @@ const IBC_REV: &str = "v3.0.0";
 const WASMD_REV: &str = "v0.29.2";
 
 /// The side version
-const SIDE_REV: &str = "v0.9.0";
+const SIDE_REV: &str = "e2b933125b79bc7f9172978734b887490d7d85cb";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
