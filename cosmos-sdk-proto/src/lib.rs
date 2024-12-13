@@ -25,6 +25,12 @@ pub mod side {
     pub mod btcbridge {
         include!("prost/side/side.btcbridge.rs");
     }
+    pub mod auction {
+        include!("prost/side/side.auction.rs");
+    }
+    pub mod dlc {
+        include!("prost/side/side.dlc.rs");
+    }
 }
 
 /// Cosmos protobuf definitions.
