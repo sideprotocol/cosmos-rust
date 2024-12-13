@@ -46,10 +46,8 @@ pub struct TxResponse {
     /// these events include those emitted by processing all the messages and those
     /// emitted from the ante. Whereas Logs contains the events, with
     /// additional metadata, emitted only by processing the messages.
-    ///
-    /// Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
     #[prost(message, repeated, tag = "13")]
-    pub events: ::prost::alloc::vec::Vec<::tendermint_proto::v0_34::abci::Event>,
+    pub events: ::prost::alloc::vec::Vec<super::super::super::super::cometbft::abci::v1::Event>,
 }
 /// ABCIMessageLog defines a structure containing an indexed tx ABCI message log.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -107,10 +105,8 @@ pub struct Result {
     /// Events contains a slice of Event objects that were emitted during message
     /// or handler execution.
     #[prost(message, repeated, tag = "3")]
-    pub events: ::prost::alloc::vec::Vec<::tendermint_proto::v0_34::abci::Event>,
+    pub events: ::prost::alloc::vec::Vec<super::super::super::super::cometbft::abci::v1::Event>,
     /// msg_responses contains the Msg handler responses type packed in Anys.
-    ///
-    /// Since: cosmos-sdk 0.46
     #[prost(message, repeated, tag = "4")]
     pub msg_responses: ::prost::alloc::vec::Vec<::prost_types::Any>,
 }
@@ -141,8 +137,6 @@ pub struct TxMsgData {
     #[prost(message, repeated, tag = "1")]
     pub data: ::prost::alloc::vec::Vec<MsgData>,
     /// msg_responses contains the Msg handler responses packed into Anys.
-    ///
-    /// Since: cosmos-sdk 0.46
     #[prost(message, repeated, tag = "2")]
     pub msg_responses: ::prost::alloc::vec::Vec<::prost_types::Any>,
 }
@@ -167,5 +161,27 @@ pub struct SearchTxsResult {
     /// List of txs in current page
     #[prost(message, repeated, tag = "6")]
     pub txs: ::prost::alloc::vec::Vec<TxResponse>,
+}
+/// SearchBlocksResult defines a structure for querying blocks pageable
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SearchBlocksResult {
+    /// Count of all blocks
+    #[prost(int64, tag = "1")]
+    pub total_count: i64,
+    /// Count of blocks in current page
+    #[prost(int64, tag = "2")]
+    pub count: i64,
+    /// Index of current page, start from 1
+    #[prost(int64, tag = "3")]
+    pub page_number: i64,
+    /// Count of total pages
+    #[prost(int64, tag = "4")]
+    pub page_total: i64,
+    /// Max count blocks per page
+    #[prost(int64, tag = "5")]
+    pub limit: i64,
+    /// List of blocks in current page
+    #[prost(message, repeated, tag = "6")]
+    pub blocks: ::prost::alloc::vec::Vec<super::super::super::super::cometbft::types::v1::Block>,
 }
 // @@protoc_insertion_point(module)

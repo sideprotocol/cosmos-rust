@@ -15,7 +15,7 @@ pub struct AppDescriptor {
     /// configuration provides metadata information regarding the sdk.Config type
     #[prost(message, optional, tag = "4")]
     pub configuration: ::core::option::Option<ConfigurationDescriptor>,
-    /// query_services provides metadata information regarding the available queriable endpoints
+    /// query_services provides metadata information regarding the available queryable endpoints
     #[prost(message, optional, tag = "5")]
     pub query_services: ::core::option::Option<QueryServicesDescriptor>,
     /// tx provides metadata information regarding how to send transactions to the given application
@@ -188,7 +188,7 @@ pub struct GetTxDescriptorResponse {
     #[prost(message, optional, tag = "1")]
     pub tx: ::core::option::Option<TxDescriptor>,
 }
-/// QueryServicesDescriptor contains the list of cosmos-sdk queriable services
+/// QueryServicesDescriptor contains the list of cosmos-sdk queryable services
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryServicesDescriptor {
     /// query_services is a list of cosmos-sdk QueryServiceDescriptor

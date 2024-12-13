@@ -29,7 +29,7 @@ const IBC_REV: &str = "v3.0.0";
 const WASMD_REV: &str = "v0.29.2";
 
 /// The side version
-const SIDE_REV: &str = "e2b933125b79bc7f9172978734b887490d7d85cb";
+const SIDE_REV: &str = "lending";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
@@ -440,18 +440,18 @@ fn patch_file(path: impl AsRef<Path>, pattern: &Regex, replacement: &str) -> io:
 
 /// Fix clashing type names in prost-generated code. See cosmos/cosmos-rust#154.
 fn apply_patches(proto_dir: &Path) {
-    for (pattern, replacement) in [
-        ("enum Validators", "enum Policy"),
-        (
-            "stake_authorization::Validators",
-            "stake_authorization::Policy",
-        ),
-    ] {
-        patch_file(
-            &proto_dir.join("cosmos-sdk/cosmos.staking.v1beta1.rs"),
-            &Regex::new(pattern).unwrap(),
-            replacement,
-        )
-        .expect("error patching cosmos.staking.v1beta1.rs");
-    }
+    // for (pattern, replacement) in [
+    //     ("enum Validators", "enum Policy"),
+    //     (
+    //         "stake_authorization::Validators",
+    //         "stake_authorization::Policy",
+    //     ),
+    // ] {
+    //     patch_file(
+    //         &proto_dir.join("cosmos-sdk/cosmos.staking.v1beta1.rs"),
+    //         &Regex::new(pattern).unwrap(),
+    //         replacement,
+    //     )
+    //     .expect("error patching cosmos.staking.v1beta1.rs");
+    // }
 }
