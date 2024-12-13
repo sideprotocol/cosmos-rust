@@ -85,10 +85,10 @@ pub mod query_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        pub async fn config(
+        pub async fn app_options(
             &mut self,
-            request: impl tonic::IntoRequest<super::QueryConfigRequest>,
-        ) -> std::result::Result<tonic::Response<super::QueryConfigResponse>, tonic::Status>
+            request: impl tonic::IntoRequest<super::AppOptionsRequest>,
+        ) -> std::result::Result<tonic::Response<super::AppOptionsResponse>, tonic::Status>
         {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -97,10 +97,10 @@ pub mod query_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/cosmos.app.v1alpha1.Query/Config");
+            let path = http::uri::PathAndQuery::from_static("/cosmos.autocli.v1.Query/AppOptions");
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.app.v1alpha1.Query", "Config"));
+                .insert(GrpcMethod::new("cosmos.autocli.v1.Query", "AppOptions"));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -113,10 +113,10 @@ pub mod query_server {
     /// Generated trait containing gRPC methods that should be implemented for use with QueryServer.
     #[async_trait]
     pub trait Query: Send + Sync + 'static {
-        async fn config(
+        async fn app_options(
             &self,
-            request: tonic::Request<super::QueryConfigRequest>,
-        ) -> std::result::Result<tonic::Response<super::QueryConfigResponse>, tonic::Status>;
+            request: tonic::Request<super::AppOptionsRequest>,
+        ) -> std::result::Result<tonic::Response<super::AppOptionsResponse>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct QueryServer<T: Query> {
@@ -194,18 +194,18 @@ pub mod query_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/cosmos.app.v1alpha1.Query/Config" => {
+                "/cosmos.autocli.v1.Query/AppOptions" => {
                     #[allow(non_camel_case_types)]
-                    struct ConfigSvc<T: Query>(pub Arc<T>);
-                    impl<T: Query> tonic::server::UnaryService<super::QueryConfigRequest> for ConfigSvc<T> {
-                        type Response = super::QueryConfigResponse;
+                    struct AppOptionsSvc<T: Query>(pub Arc<T>);
+                    impl<T: Query> tonic::server::UnaryService<super::AppOptionsRequest> for AppOptionsSvc<T> {
+                        type Response = super::AppOptionsResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::QueryConfigRequest>,
+                            request: tonic::Request<super::AppOptionsRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move { (*inner).config(request).await };
+                            let fut = async move { (*inner).app_options(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -216,7 +216,7 @@ pub mod query_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = ConfigSvc(inner);
+                        let method = AppOptionsSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -266,6 +266,6 @@ pub mod query_server {
         }
     }
     impl<T: Query> tonic::server::NamedService for QueryServer<T> {
-        const NAME: &'static str = "cosmos.app.v1alpha1.Query";
+        const NAME: &'static str = "cosmos.autocli.v1.Query";
     }
 }

@@ -1,16 +1,19 @@
 // @generated
 /// Generated client implementations.
 #[cfg(feature = "grpc")]
-pub mod query_client {
+pub mod reflection_service_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    /** Package cosmos.reflection.v1 provides support for inspecting protobuf
+     file descriptors.
+    */
     #[derive(Debug, Clone)]
-    pub struct QueryClient<T> {
+    pub struct ReflectionServiceClient<T> {
         inner: tonic::client::Grpc<T>,
     }
     #[cfg(feature = "grpc-transport")]
-    impl QueryClient<tonic::transport::Channel> {
+    impl ReflectionServiceClient<tonic::transport::Channel> {
         /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
@@ -21,7 +24,7 @@ pub mod query_client {
             Ok(Self::new(conn))
         }
     }
-    impl<T> QueryClient<T>
+    impl<T> ReflectionServiceClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
@@ -39,7 +42,7 @@ pub mod query_client {
         pub fn with_interceptor<F>(
             inner: T,
             interceptor: F,
-        ) -> QueryClient<InterceptedService<T, F>>
+        ) -> ReflectionServiceClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
             T::ResponseBody: Default,
@@ -52,7 +55,7 @@ pub mod query_client {
             <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
-            QueryClient::new(InterceptedService::new(inner, interceptor))
+            ReflectionServiceClient::new(InterceptedService::new(inner, interceptor))
         }
         /// Compress requests with the given encoding.
         ///
@@ -85,10 +88,13 @@ pub mod query_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        pub async fn config(
+        /** FileDescriptors queries all the file descriptors in the app in order
+         to enable easier generation of dynamic clients.
+        */
+        pub async fn file_descriptors(
             &mut self,
-            request: impl tonic::IntoRequest<super::QueryConfigRequest>,
-        ) -> std::result::Result<tonic::Response<super::QueryConfigResponse>, tonic::Status>
+            request: impl tonic::IntoRequest<super::FileDescriptorsRequest>,
+        ) -> std::result::Result<tonic::Response<super::FileDescriptorsResponse>, tonic::Status>
         {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -97,29 +103,39 @@ pub mod query_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/cosmos.app.v1alpha1.Query/Config");
+            let path = http::uri::PathAndQuery::from_static(
+                "/cosmos.reflection.v1.ReflectionService/FileDescriptors",
+            );
             let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("cosmos.app.v1alpha1.Query", "Config"));
+            req.extensions_mut().insert(GrpcMethod::new(
+                "cosmos.reflection.v1.ReflectionService",
+                "FileDescriptors",
+            ));
             self.inner.unary(req, path, codec).await
         }
     }
 }
 /// Generated server implementations.
 #[cfg(feature = "grpc")]
-pub mod query_server {
+pub mod reflection_service_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    /// Generated trait containing gRPC methods that should be implemented for use with QueryServer.
+    /// Generated trait containing gRPC methods that should be implemented for use with ReflectionServiceServer.
     #[async_trait]
-    pub trait Query: Send + Sync + 'static {
-        async fn config(
+    pub trait ReflectionService: Send + Sync + 'static {
+        /** FileDescriptors queries all the file descriptors in the app in order
+         to enable easier generation of dynamic clients.
+        */
+        async fn file_descriptors(
             &self,
-            request: tonic::Request<super::QueryConfigRequest>,
-        ) -> std::result::Result<tonic::Response<super::QueryConfigResponse>, tonic::Status>;
+            request: tonic::Request<super::FileDescriptorsRequest>,
+        ) -> std::result::Result<tonic::Response<super::FileDescriptorsResponse>, tonic::Status>;
     }
+    /** Package cosmos.reflection.v1 provides support for inspecting protobuf
+     file descriptors.
+    */
     #[derive(Debug)]
-    pub struct QueryServer<T: Query> {
+    pub struct ReflectionServiceServer<T: ReflectionService> {
         inner: _Inner<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
@@ -127,7 +143,7 @@ pub mod query_server {
         max_encoding_message_size: Option<usize>,
     }
     struct _Inner<T>(Arc<T>);
-    impl<T: Query> QueryServer<T> {
+    impl<T: ReflectionService> ReflectionServiceServer<T> {
         pub fn new(inner: T) -> Self {
             Self::from_arc(Arc::new(inner))
         }
@@ -176,9 +192,9 @@ pub mod query_server {
             self
         }
     }
-    impl<T, B> tonic::codegen::Service<http::Request<B>> for QueryServer<T>
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for ReflectionServiceServer<T>
     where
-        T: Query,
+        T: ReflectionService,
         B: Body + Send + 'static,
         B::Error: Into<StdError> + Send + 'static,
     {
@@ -194,18 +210,21 @@ pub mod query_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/cosmos.app.v1alpha1.Query/Config" => {
+                "/cosmos.reflection.v1.ReflectionService/FileDescriptors" => {
                     #[allow(non_camel_case_types)]
-                    struct ConfigSvc<T: Query>(pub Arc<T>);
-                    impl<T: Query> tonic::server::UnaryService<super::QueryConfigRequest> for ConfigSvc<T> {
-                        type Response = super::QueryConfigResponse;
+                    struct FileDescriptorsSvc<T: ReflectionService>(pub Arc<T>);
+                    impl<T: ReflectionService>
+                        tonic::server::UnaryService<super::FileDescriptorsRequest>
+                        for FileDescriptorsSvc<T>
+                    {
+                        type Response = super::FileDescriptorsResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::QueryConfigRequest>,
+                            request: tonic::Request<super::FileDescriptorsRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move { (*inner).config(request).await };
+                            let fut = async move { (*inner).file_descriptors(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -216,7 +235,7 @@ pub mod query_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = ConfigSvc(inner);
+                        let method = FileDescriptorsSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -243,7 +262,7 @@ pub mod query_server {
             }
         }
     }
-    impl<T: Query> Clone for QueryServer<T> {
+    impl<T: ReflectionService> Clone for ReflectionServiceServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self {
@@ -255,7 +274,7 @@ pub mod query_server {
             }
         }
     }
-    impl<T: Query> Clone for _Inner<T> {
+    impl<T: ReflectionService> Clone for _Inner<T> {
         fn clone(&self) -> Self {
             Self(Arc::clone(&self.0))
         }
@@ -265,7 +284,7 @@ pub mod query_server {
             write!(f, "{:?}", self.0)
         }
     }
-    impl<T: Query> tonic::server::NamedService for QueryServer<T> {
-        const NAME: &'static str = "cosmos.app.v1alpha1.Query";
+    impl<T: ReflectionService> tonic::server::NamedService for ReflectionServiceServer<T> {
+        const NAME: &'static str = "cosmos.reflection.v1.ReflectionService";
     }
 }

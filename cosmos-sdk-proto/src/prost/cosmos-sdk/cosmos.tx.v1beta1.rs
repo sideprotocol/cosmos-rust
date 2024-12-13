@@ -58,8 +58,6 @@ pub struct SignDoc {
 }
 /// SignDocDirectAux is the type used for generating sign bytes for
 /// SIGN_MODE_DIRECT_AUX.
-///
-/// Since: cosmos-sdk 0.46
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SignDocDirectAux {
     /// body_bytes is protobuf serialization of a TxBody that matches the
@@ -80,12 +78,8 @@ pub struct SignDocDirectAux {
     /// sequence is the sequence number of the signing account.
     #[prost(uint64, tag = "5")]
     pub sequence: u64,
-    /// Tip is the optional tip used for transactions fees paid in another denom.
-    /// It should be left empty if the signer is not the tipper for this
-    /// transaction.
-    ///
-    /// This field is ignored if the chain didn't enable tips, i.e. didn't add the
-    /// `TipDecorator` in its posthandler.
+    /// tips have been deprecated and should not be used
+    #[deprecated]
     #[prost(message, optional, tag = "6")]
     pub tip: ::core::option::Option<Tip>,
 }
@@ -103,13 +97,33 @@ pub struct TxBody {
     pub messages: ::prost::alloc::vec::Vec<::prost_types::Any>,
     /// memo is any arbitrary note/comment to be added to the transaction.
     /// WARNING: in clients, any publicly exposed text should not be called memo,
-    /// but should be called `note` instead (see <https://github.com/cosmos/cosmos-sdk/issues/9122>).
+    /// but should be called `note` instead (see
+    /// <https://github.com/cosmos/cosmos-sdk/issues/9122>).
     #[prost(string, tag = "2")]
     pub memo: ::prost::alloc::string::String,
-    /// timeout is the block height after which this transaction will not
-    /// be processed by the chain
+    /// timeout_height is the block height after which this transaction will not
+    /// be processed by the chain.
     #[prost(uint64, tag = "3")]
     pub timeout_height: u64,
+    /// unordered, when set to true, indicates that the transaction signer(s)
+    /// intend for the transaction to be evaluated and executed in an un-ordered
+    /// fashion. Specifically, the account's nonce will NOT be checked or
+    /// incremented, which allows for fire-and-forget as well as concurrent
+    /// transaction execution.
+    ///
+    /// Note, when set to true, the existing 'timeout_height' value must
+    /// be set and will be used to correspond to a time_stamp in which the transaction is deemed
+    /// valid.
+    #[prost(bool, tag = "4")]
+    pub unordered: bool,
+    /// timeout_timestamp is the block time after which this transaction will not
+    /// be processed by the chain.
+    ///
+    /// Note, if unordered=true this value MUST be set
+    /// and will act as a short-lived TTL in which the transaction is deemed valid
+    /// and kept in memory to prevent duplicates.
+    #[prost(message, optional, tag = "5")]
+    pub timeout_timestamp: ::core::option::Option<::prost_types::Timestamp>,
     /// extension_options are arbitrary options that can be added by chains
     /// when the default options are not sufficient. If any of these are present
     /// and can't be handled, the transaction will be rejected
@@ -141,8 +155,7 @@ pub struct AuthInfo {
     ///
     /// This field is ignored if the chain didn't enable tips, i.e. didn't add the
     /// `TipDecorator` in its posthandler.
-    ///
-    /// Since: cosmos-sdk 0.46
+    #[deprecated]
     #[prost(message, optional, tag = "3")]
     pub tip: ::core::option::Option<Tip>,
 }
@@ -210,7 +223,7 @@ pub mod mode_info {
 }
 /// Fee includes the amount of coins paid in fees and the maximum
 /// gas to be used by the transaction. The ratio yields an effective "gasprice",
-/// which must be above some miminum to be accepted into the mempool.
+/// which must be above some minimum to be accepted into the mempool.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Fee {
     /// amount is the amount of coins to be paid as a fee
@@ -220,20 +233,20 @@ pub struct Fee {
     /// before an out of gas error occurs
     #[prost(uint64, tag = "2")]
     pub gas_limit: u64,
-    /// if unset, the first signer is responsible for paying the fees. If set, the specified account must pay the fees.
-    /// the payer must be a tx signer (and thus have signed this field in AuthInfo).
-    /// setting this field does *not* change the ordering of required signers for the transaction.
+    /// if unset, the first signer is responsible for paying the fees. If set, the
+    /// specified account must pay the fees. the payer must be a tx signer (and
+    /// thus have signed this field in AuthInfo). setting this field does *not*
+    /// change the ordering of required signers for the transaction.
     #[prost(string, tag = "3")]
     pub payer: ::prost::alloc::string::String,
-    /// if set, the fee payer (either the first signer or the value of the payer field) requests that a fee grant be used
-    /// to pay fees instead of the fee payer's own balance. If an appropriate fee grant does not exist or the chain does
-    /// not support fee grants, this will fail
+    /// if set, the fee payer (either the first signer or the value of the payer
+    /// field) requests that a fee grant be used to pay fees instead of the fee
+    /// payer's own balance. If an appropriate fee grant does not exist or the
+    /// chain does not support fee grants, this will fail
     #[prost(string, tag = "4")]
     pub granter: ::prost::alloc::string::String,
 }
 /// Tip is the tip used for meta-transactions.
-///
-/// Since: cosmos-sdk 0.46
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Tip {
     /// amount is the amount of the tip
@@ -247,8 +260,6 @@ pub struct Tip {
 /// tipper) builds and sends to the fee payer (who will build and broadcast the
 /// actual tx). AuxSignerData is not a valid tx in itself, and will be rejected
 /// by the node if sent directly as-is.
-///
-/// Since: cosmos-sdk 0.46
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuxSignerData {
     /// address is the bech32-encoded address of the auxiliary signer. If using
@@ -273,22 +284,30 @@ pub struct AuxSignerData {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTxsEventRequest {
     /// events is the list of transaction event type.
+    /// Deprecated: post v0.47.x use query instead, which should contain a valid
+    /// events query.
+    #[deprecated]
     #[prost(string, repeated, tag = "1")]
     pub events: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// pagination defines a pagination for the request.
-    /// Deprecated post v0.46.x: use page and limit instead.
+    /// Deprecated: post v0.46.x use page and limit instead.
     #[deprecated]
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
     #[prost(enumeration = "OrderBy", tag = "3")]
     pub order_by: i32,
-    /// page is the page number to query, starts at 1. If not provided, will default to first page.
+    /// page is the page number to query, starts at 1. If not provided, will
+    /// default to first page.
     #[prost(uint64, tag = "4")]
     pub page: u64,
     /// limit is the total number of results to be returned in the result page.
     /// If left empty it will default to a value to be set by each app.
     #[prost(uint64, tag = "5")]
     pub limit: u64,
+    /// query defines the transaction event query that is proxied to Tendermint's
+    /// TxSearch RPC method. The query must be valid.
+    #[prost(string, tag = "6")]
+    pub query: ::prost::alloc::string::String,
 }
 /// GetTxsEventResponse is the response type for the Service.TxsByEvents
 /// RPC method.
@@ -301,7 +320,7 @@ pub struct GetTxsEventResponse {
     #[prost(message, repeated, tag = "2")]
     pub tx_responses: ::prost::alloc::vec::Vec<super::super::base::abci::v1beta1::TxResponse>,
     /// pagination defines a pagination for the response.
-    /// Deprecated post v0.46.x: use total instead.
+    /// Deprecated: post v0.46.x use total instead.
     #[deprecated]
     #[prost(message, optional, tag = "3")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
@@ -337,8 +356,6 @@ pub struct SimulateRequest {
     #[prost(message, optional, tag = "1")]
     pub tx: ::core::option::Option<Tx>,
     /// tx_bytes is the raw transaction.
-    ///
-    /// Since: cosmos-sdk 0.43
     #[prost(bytes = "vec", tag = "2")]
     pub tx_bytes: ::prost::alloc::vec::Vec<u8>,
 }
@@ -373,8 +390,6 @@ pub struct GetTxResponse {
 }
 /// GetBlockWithTxsRequest is the request type for the Service.GetBlockWithTxs
 /// RPC method.
-///
-/// Since: cosmos-sdk 0.45.2
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBlockWithTxsRequest {
     /// height is the height of the block to query.
@@ -384,27 +399,87 @@ pub struct GetBlockWithTxsRequest {
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
-/// GetBlockWithTxsResponse is the response type for the Service.GetBlockWithTxs method.
-///
-/// Since: cosmos-sdk 0.45.2
+/// GetBlockWithTxsResponse is the response type for the Service.GetBlockWithTxs
+/// method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBlockWithTxsResponse {
     /// txs are the transactions in the block.
     #[prost(message, repeated, tag = "1")]
     pub txs: ::prost::alloc::vec::Vec<Tx>,
     #[prost(message, optional, tag = "2")]
-    pub block_id: ::core::option::Option<::tendermint_proto::v0_34::types::BlockId>,
+    pub block_id: ::core::option::Option<super::super::super::cometbft::types::v1::BlockId>,
     #[prost(message, optional, tag = "3")]
-    pub block: ::core::option::Option<::tendermint_proto::v0_34::types::Block>,
+    pub block: ::core::option::Option<super::super::super::cometbft::types::v1::Block>,
     /// pagination defines a pagination for the response.
     #[prost(message, optional, tag = "4")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
+}
+/// TxDecodeRequest is the request type for the Service.TxDecode
+/// RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxDecodeRequest {
+    /// tx_bytes is the raw transaction.
+    #[prost(bytes = "vec", tag = "1")]
+    pub tx_bytes: ::prost::alloc::vec::Vec<u8>,
+}
+/// TxDecodeResponse is the response type for the
+/// Service.TxDecode method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxDecodeResponse {
+    /// tx is the decoded transaction.
+    #[prost(message, optional, tag = "1")]
+    pub tx: ::core::option::Option<Tx>,
+}
+/// TxEncodeRequest is the request type for the Service.TxEncode
+/// RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxEncodeRequest {
+    /// tx is the transaction to encode.
+    #[prost(message, optional, tag = "1")]
+    pub tx: ::core::option::Option<Tx>,
+}
+/// TxEncodeResponse is the response type for the
+/// Service.TxEncode method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxEncodeResponse {
+    /// tx_bytes is the encoded transaction bytes.
+    #[prost(bytes = "vec", tag = "1")]
+    pub tx_bytes: ::prost::alloc::vec::Vec<u8>,
+}
+/// TxEncodeAminoRequest is the request type for the Service.TxEncodeAmino
+/// RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxEncodeAminoRequest {
+    #[prost(string, tag = "1")]
+    pub amino_json: ::prost::alloc::string::String,
+}
+/// TxEncodeAminoResponse is the response type for the Service.TxEncodeAmino
+/// RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxEncodeAminoResponse {
+    #[prost(bytes = "vec", tag = "1")]
+    pub amino_binary: ::prost::alloc::vec::Vec<u8>,
+}
+/// TxDecodeAminoRequest is the request type for the Service.TxDecodeAmino
+/// RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxDecodeAminoRequest {
+    #[prost(bytes = "vec", tag = "1")]
+    pub amino_binary: ::prost::alloc::vec::Vec<u8>,
+}
+/// TxDecodeAminoResponse is the response type for the Service.TxDecodeAmino
+/// RPC method.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxDecodeAminoResponse {
+    #[prost(string, tag = "1")]
+    pub amino_json: ::prost::alloc::string::String,
 }
 /// OrderBy defines the sorting order
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum OrderBy {
-    /// ORDER_BY_UNSPECIFIED specifies an unknown sorting order. OrderBy defaults to ASC in this case.
+    /// ORDER_BY_UNSPECIFIED specifies an unknown sorting order. OrderBy defaults
+    /// to ASC in this case.
     Unspecified = 0,
     /// ORDER_BY_ASC defines ascending order
     Asc = 1,
@@ -424,20 +499,21 @@ impl OrderBy {
         }
     }
 }
-/// BroadcastMode specifies the broadcast mode for the TxService.Broadcast RPC method.
+/// BroadcastMode specifies the broadcast mode for the TxService.Broadcast RPC
+/// method.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum BroadcastMode {
     /// zero-value for mode ordering
     Unspecified = 0,
-    /// BROADCAST_MODE_BLOCK defines a tx broadcasting mode where the client waits for
-    /// the tx to be committed in a block.
+    /// Deprecated: use BROADCAST_MODE_SYNC instead,
+    /// BROADCAST_MODE_BLOCK is not supported by the SDK from v0.47.x onwards.
     Block = 1,
-    /// BROADCAST_MODE_SYNC defines a tx broadcasting mode where the client waits for
-    /// a CheckTx execution response only.
+    /// BROADCAST_MODE_SYNC defines a tx broadcasting mode where the client waits
+    /// for a CheckTx execution response only.
     Sync = 2,
-    /// BROADCAST_MODE_ASYNC defines a tx broadcasting mode where the client returns
-    /// immediately.
+    /// BROADCAST_MODE_ASYNC defines a tx broadcasting mode where the client
+    /// returns immediately.
     Async = 3,
 }
 impl BroadcastMode {
