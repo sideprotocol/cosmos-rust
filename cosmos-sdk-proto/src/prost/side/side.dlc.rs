@@ -89,8 +89,8 @@ pub struct QueryParamsResponse {
 /// QueryAnnouncementsRequest is request type for the Query/Announcements RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAnnouncementsRequest {
-    #[prost(string, tag = "1")]
-    pub status: ::prost::alloc::string::String,
+    #[prost(enumeration = "AnnouncementStatus", tag = "1")]
+    pub status: i32,
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }

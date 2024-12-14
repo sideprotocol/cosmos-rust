@@ -123,8 +123,8 @@ pub struct QueryParamsResponse {
 /// QueryAuctionsRequest is request type for the Query/Auctions RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryAuctionsRequest {
-    #[prost(string, tag = "1")]
-    pub status: ::prost::alloc::string::String,
+    #[prost(enumeration = "AuctionStatus", tag = "1")]
+    pub status: i32,
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
@@ -140,8 +140,8 @@ pub struct QueryAuctionsResponse {
 /// QueryBidsRequest is request type for the Query/Bids RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryBidsRequest {
-    #[prost(string, tag = "1")]
-    pub status: ::prost::alloc::string::String,
+    #[prost(enumeration = "BidStatus", tag = "1")]
+    pub status: i32,
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::cosmos::base::query::v1beta1::PageRequest>,
 }
