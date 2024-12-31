@@ -276,9 +276,9 @@ pub struct DkgParticipant {
     /// the operator address of the corresponding validator
     #[prost(string, tag = "2")]
     pub operator_address: ::prost::alloc::string::String,
-    /// the consensus address of the corresponding validator
+    /// the consensus public key of the corresponding validator
     #[prost(string, tag = "3")]
-    pub consensus_address: ::prost::alloc::string::String,
+    pub consensus_pubkey: ::prost::alloc::string::String,
 }
 /// DKG Request
 #[derive(Clone, PartialEq, ::prost::Message)]
