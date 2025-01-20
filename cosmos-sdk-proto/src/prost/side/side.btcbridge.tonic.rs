@@ -1704,11 +1704,11 @@ pub mod msg_client {
             ));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn update_trusted_oracles(
+        pub async fn update_trusted_fee_providers(
             &mut self,
-            request: impl tonic::IntoRequest<super::MsgUpdateTrustedOracles>,
+            request: impl tonic::IntoRequest<super::MsgUpdateTrustedFeeProviders>,
         ) -> std::result::Result<
-            tonic::Response<super::MsgUpdateTrustedOraclesResponse>,
+            tonic::Response<super::MsgUpdateTrustedFeeProvidersResponse>,
             tonic::Status,
         > {
             self.inner.ready().await.map_err(|e| {
@@ -1718,12 +1718,13 @@ pub mod msg_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/side.btcbridge.Msg/UpdateTrustedOracles");
+            let path = http::uri::PathAndQuery::from_static(
+                "/side.btcbridge.Msg/UpdateTrustedFeeProviders",
+            );
             let mut req = request.into_request();
             req.extensions_mut().insert(GrpcMethod::new(
                 "side.btcbridge.Msg",
-                "UpdateTrustedOracles",
+                "UpdateTrustedFeeProviders",
             ));
             self.inner.unary(req, path, codec).await
         }
@@ -1894,11 +1895,11 @@ pub mod msg_server {
             tonic::Response<super::MsgUpdateTrustedNonBtcRelayersResponse>,
             tonic::Status,
         >;
-        async fn update_trusted_oracles(
+        async fn update_trusted_fee_providers(
             &self,
-            request: tonic::Request<super::MsgUpdateTrustedOracles>,
+            request: tonic::Request<super::MsgUpdateTrustedFeeProviders>,
         ) -> std::result::Result<
-            tonic::Response<super::MsgUpdateTrustedOraclesResponse>,
+            tonic::Response<super::MsgUpdateTrustedFeeProvidersResponse>,
             tonic::Status,
         >;
         async fn withdraw_to_bitcoin(
@@ -2208,20 +2209,21 @@ pub mod msg_server {
                     };
                     Box::pin(fut)
                 }
-                "/side.btcbridge.Msg/UpdateTrustedOracles" => {
+                "/side.btcbridge.Msg/UpdateTrustedFeeProviders" => {
                     #[allow(non_camel_case_types)]
-                    struct UpdateTrustedOraclesSvc<T: Msg>(pub Arc<T>);
-                    impl<T: Msg> tonic::server::UnaryService<super::MsgUpdateTrustedOracles>
-                        for UpdateTrustedOraclesSvc<T>
+                    struct UpdateTrustedFeeProvidersSvc<T: Msg>(pub Arc<T>);
+                    impl<T: Msg> tonic::server::UnaryService<super::MsgUpdateTrustedFeeProviders>
+                        for UpdateTrustedFeeProvidersSvc<T>
                     {
-                        type Response = super::MsgUpdateTrustedOraclesResponse;
+                        type Response = super::MsgUpdateTrustedFeeProvidersResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::MsgUpdateTrustedOracles>,
+                            request: tonic::Request<super::MsgUpdateTrustedFeeProviders>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move { (*inner).update_trusted_oracles(request).await };
+                            let fut =
+                                async move { (*inner).update_trusted_fee_providers(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -2232,7 +2234,7 @@ pub mod msg_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = UpdateTrustedOraclesSvc(inner);
+                        let method = UpdateTrustedFeeProvidersSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

@@ -23,9 +23,9 @@ pub struct Params {
     /// Trusted relayers for non-btc asset deposit
     #[prost(string, repeated, tag = "7")]
     pub trusted_non_btc_relayers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    /// Trusted oracles for providing offchain data, e.g. bitcoin fee rate
+    /// Trusted fee providers to submit bitcoin fee rate
     #[prost(string, repeated, tag = "8")]
-    pub trusted_oracles: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    pub trusted_fee_providers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// Period of validity for the fee rate
     #[prost(int64, tag = "9")]
     pub fee_rate_validity_period: i64,
@@ -401,6 +401,8 @@ pub struct GenesisState {
     pub block_headers: ::prost::alloc::vec::Vec<BlockHeader>,
     #[prost(message, repeated, tag = "4")]
     pub utxos: ::prost::alloc::vec::Vec<Utxo>,
+    #[prost(message, optional, tag = "5")]
+    pub dkg_request: ::core::option::Option<DkgRequest>,
 }
 /// QueryWithdrawRequestsByAddressRequest is request type for the Query/WithdrawRequestsByAddress RPC method.
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -717,17 +719,17 @@ pub struct MsgUpdateTrustedNonBtcRelayers {
 /// MsgUpdateTrustedNonBtcRelayersResponse defines the Msg/UpdateTrustedNonBtcRelayers response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgUpdateTrustedNonBtcRelayersResponse {}
-/// MsgUpdateTrustedOracles defines the Msg/UpdateTrustedOracles request type.
+/// MsgUpdateTrustedFeeProviders defines the Msg/UpdateTrustedFeeProviders request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateTrustedOracles {
+pub struct MsgUpdateTrustedFeeProviders {
     #[prost(string, tag = "1")]
     pub sender: ::prost::alloc::string::String,
     #[prost(string, repeated, tag = "2")]
-    pub oracles: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    pub fee_providers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// MsgUpdateTrustedOraclesResponse defines the Msg/UpdateTrustedOracles response type.
+/// MsgUpdateTrustedFeeProvidersResponse defines the Msg/UpdateTrustedFeeProviders response type.
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateTrustedOraclesResponse {}
+pub struct MsgUpdateTrustedFeeProvidersResponse {}
 /// MsgWithdrawToBitcoin defines the Msg/WithdrawToBitcoin request type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgWithdrawToBitcoin {
